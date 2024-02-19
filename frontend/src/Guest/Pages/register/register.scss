@@ -1,22 +1,22 @@
 .register {
   height: 100vh;
-  background-color: rgb(193, 190, 255);
+  background-color: rgb(200, 219, 228);
   display: flex;
   align-items: center;
   justify-content: center;
 
   .card {
-    width: 50%;
+    width: 60%;
     display: flex;
     flex-direction: row-reverse;
-    background-color: white;
+    background-color:  rgb(225, 240, 243);
     border-radius: 10px;
     min-height: 600px;
     overflow: hidden;
 
     .left {
       flex: 1;
-      background: linear-gradient(rgba(39, 11, 96, 0.5), rgba(39, 11, 96, 0.5)),
+      background: linear-gradient(rgba(11, 48, 96, 0.5), rgba(11, 48, 96, 0.5)),
         url("https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600")
           center;
       background-size: cover;
@@ -43,7 +43,7 @@
         padding: 10px;
         border: none;
         background-color: white;
-        color: rebeccapurple;
+        color: rgb(27, 83, 123);
         font-weight: bold;
         cursor: pointer;
       }
@@ -58,7 +58,7 @@
       justify-content: center;
 
       h1 {
-      color: #555;
+      color: #154b60;
       }
       
       form {
@@ -76,7 +76,7 @@
           width: 50%;
           padding: 10px;
           border: none;
-          background-color: #938eef;
+          background-color: #1f4464;
           color: white;
           font-weight: bold;
           cursor: pointer;

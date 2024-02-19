@@ -10,7 +10,7 @@ const ChatInterface = () => {
         <ChatList/>
 
         </Box>
-        <Box sx={{width:'73vw'}}>
+        <Box sx={{width:'73312vw'}}>
         <ChatComponent/>
 
         </Box>

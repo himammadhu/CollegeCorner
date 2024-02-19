@@ -6,11 +6,11 @@ const Register = () => {
     <div className="register">
       <div className="card">
         <div className="left">
-          <h1>Lama Social.</h1>
+        <h1>CoLLegE
+            CoRNer!</h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero cum,
-            alias totam numquam ipsa exercitationem dignissimos, error nam,
-            consequatur.
+          "Connecting minds, forging friendships, and creating memories—welcome to College Corner, where every post is a step closer to a shared journey of learning, laughter, and lifelong connections.
+
           </p>
           <span>Do you have an account?</span>
           <Link to="/Guest/">
@@ -18,12 +18,11 @@ const Register = () => {
           </Link>
         </div>
         <div className="right">
-          <h1>Register</h1>
+          <h1>REGISTER</h1>
           <form>
-            <input type="text" placeholder="Username" />
+            <input type="text" placeholder="Name" />
             <input type="email" placeholder="Email" />
             <input type="password" placeholder="Password" />
-            <input type="text" placeholder="Name" />
             <button>Register</button>
           </form>
         </div>
