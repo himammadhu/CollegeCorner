@@ -10,6 +10,7 @@ import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
 import "./style.scss";
 import { useState } from "react";
+import ChatInterface from "./pages/ChatInterface/ChatInterface";
 
 
 
