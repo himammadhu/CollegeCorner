@@ -1,30 +1,23 @@
-import React, { useContext } from 'react'
+import React  from 'react'
 import "./NavBar.scss"
-import SearchIcon from '@mui/icons-material/Search';
 import LanguageIcon from '@mui/icons-material/Language';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import CommentIcon from '@mui/icons-material/Comment';
 import ListIcon from '@mui/icons-material/List';
-import { DarkModeContext } from '../../context/darkModeContext';
 const NavBar = () => {
-  const {dispatch}=useContext(DarkModeContext)
   return (
     <div className='navbar'>
       <div className="wrapper">
         <div className="search">
-          <input type="search" name="search" id="search" placeholder='search..' autocomplete="off" />
-          <SearchIcon/>
+      
         </div>
         <div className="items">
           <div className="item">
             <LanguageIcon className='icon' />
             English
           </div>
-          <div className="item">
-            <DarkModeIcon className='icon' onClick={()=>dispatch({type:"TOGGLE"})} />
-          </div>
+          
           <div className="item">
             <FullscreenExitIcon className='icon' />
 

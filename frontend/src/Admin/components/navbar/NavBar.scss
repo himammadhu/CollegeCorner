@@ -1,5 +1,5 @@
 .navbar{
-    height: 50px;
+    height: 60px;
     border-bottom:  1px solid rgba(154, 209, 204, 0.81) ;
     display: flex;
     align-items: center;
@@ -16,8 +16,6 @@
         .search{
             display: flex;
             align-items: center;
-            border:0.5px solid lightgray;
-            padding: 3px;
             input{
                 border: none;
                 outline: none;

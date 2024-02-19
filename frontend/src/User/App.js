@@ -9,16 +9,17 @@ import RightBar from "./components/rightBar/RightBar";
 import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
 import "./style.scss";
+import { useState } from "react";
 
 
 
 function App() {
-
+const [check, setCheck] = useState(false)
 
     return (
 
-      <div className={`theme-dark`}>
-        <Navbar />
+      <div className={`theme-${check ? "dark" : "light"}`}>
+        <Navbar  setCheck={setCheck} check={check}/>
         <div style={{ display: "flex" }}>
           <LeftBar />
           <div style={{ flex: 6 }}>
