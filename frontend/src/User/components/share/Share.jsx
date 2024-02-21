@@ -2,8 +2,12 @@ import "./share.scss";
 import Image from "../../assets/img.png";
 import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
+import { useState } from "react";
 
 const Share = () => {
+
+  const [image, setImage] = useState();
+  const [description, setDescription] = useState();
 
   return (
     <div className="share">
@@ -13,12 +17,12 @@ const Share = () => {
             src={''}
             alt=""
           />
-          <input type="text" placeholder={`What's on your mind ${''}?`} />
+          <input type="text" placeholder={`What's on your mind ${''}?`} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <hr />
         <div className="bottom">
           <div className="left">
-            <input type="file" id="file" style={{display:"none"}} />
+            <input type="file" id="file" style={{display:"none"}} onChange={ (e) => setImage(e.target.files[0])}/>
             <label htmlFor="file">
               <div className="item">
                 <img src={Image} alt="" />
@@ -35,7 +39,7 @@ const Share = () => {
             </div>
           </div>
           <div className="right">
-            <button>Share</button>
+            <button >Share</button>
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@ const [check, setCheck] = useState(false)
           <div style={{ flex: 6 }}>
             <Routes>
               <Route path="/" element={<Home />}/>
-              <Route path="/profile/:id" element={ <Profile />}/>
+              <Route path="/profile" element={ <Profile />}/>
             </Routes>
           </div>
           <RightBar />

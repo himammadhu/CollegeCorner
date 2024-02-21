@@ -19,6 +19,7 @@ import {
   } from '../../UserStyle'
 //   import Navbar from './Navbar'
   import SendIcon from '@mui/icons-material/Send'
+import UserNavBar from '../UserNavBar/UserNavBar'
   
   const ChatComponent = ({ props }) => {
   
@@ -37,7 +38,7 @@ import {
   
     return (
       <Card sx={ChatContainerMainContainer}>
-        {/* <Navbar props={props.friend ? props.friend : props} /> */}
+        <UserNavBar/>
         <Box sx={ChatComponentInnerBoxChat}>
           <FormControl fullWidth sx={{ m: 1 }}>
             <OutlinedInput
