@@ -185,7 +185,39 @@ app.post("/College",
 app.get("/College", async (req, res) => {
 
   try {
-    let Collegelist = await College.find();
+    let Collegelist = await College.find({ __v: 0 });
+
+    res.json({ Collegelist });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+
+//select
+app.get("/CollegeAccepted", async (req, res) => {
+
+  try {
+    let Collegelist = await College.find({ __v: 1 });
+
+    res.json({ Collegelist });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+
+//select
+app.get("/CollegeRejected", async (req, res) => {
+
+  try {
+    let Collegelist = await College.find({ __v: 2 });
 
     res.json({ Collegelist });
 
@@ -236,6 +268,51 @@ app.put("/College/:id", async (req, res) => {
 });
 
 
+//Update
+
+app.put("/acceptCollege/:id", async (req, res) => {
+  try {
+    const Id = req.params.id
+
+    const updatedCollege = await College.findByIdAndUpdate(
+      Id,
+      { __v: 1 },
+      { new: true }
+    );
+    res.json(updatedCollege)
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+
+  }
+});
+
+
+
+
+//Update
+
+app.put("/rejectCollege/:id", async (req, res) => {
+  try {
+    const Id = req.params.id
+
+    const updatedCollege = await College.findByIdAndUpdate(
+      Id,
+      { __v: 2 },
+      { new: true }
+    );
+    res.json(updatedCollege)
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+
+  }
+});
+
+
+
 
 const UserSchemaStructure = new mongoose.Schema({
   name: {
@@ -276,10 +353,10 @@ const UserSchemaStructure = new mongoose.Schema({
 const User = mongoose.model("UserSchema", UserSchemaStructure);
 //insert
 app.post("/User", async (req, res) => {
-  const { name, email, password,  hierarchy, CollegeId, batch } = req.body;
+  const { name, email, password, hierarchy, CollegeId, batch } = req.body;
   try {
     const UserSchemaData = new User({
-      name, email, password,  hierarchy, CollegeId, batch
+      name, email, password, hierarchy, CollegeId, batch
     });
     await UserSchemaData.save();
 
@@ -583,22 +660,30 @@ const CollegeFeedSchemaStructure = new mongoose.Schema({
 const CollegeFeed = mongoose.model("CollegeFeedSchema", CollegeFeedSchemaStructure);
 
 
-app.post("/CollegeFeed", async (req, res) => {
-  const { CollegeFeedDateTime, CollegeFeedContent, CollegeId, CollegeDiscription, CollegeFeedTotalLike, CollegeFeedTotalComment } = req.body;
-  try {
-    const CollegeFeedSchemaData = new CollegeFeed({
-      CollegeFeedDateTime, CollegeFeedContent, CollegeId, CollegeDiscription, CollegeFeedTotalLike, CollegeFeedTotalComment
-    });
-    await CollegeFeedSchemaData.save();
+app.post("/CollegeFeed",
+  upload.fields([
+    { name: "CollegeFeedContent", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      var fileValue = JSON.parse(JSON.stringify(req.files));
+      var CollegeFeedContent = `http://127.0.0.1:${PORT}/images/${fileValue.CollegeFeedContent[0].filename}`;
 
-    res.json({ message: "College Feed inserted succesfully" });
+      const { CollegeFeedDateTime, CollegeId, CollegeDiscription } = req.body;
 
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
+      const CollegeFeedSchemaData = new CollegeFeed({
+        CollegeFeedDateTime, CollegeFeedContent, CollegeId, CollegeDiscription
+      });
+      await CollegeFeedSchemaData.save();
+
+      res.json({ message: "College Feed inserted succesfully" });
+
+    }
+    catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server error");
+    }
+  })
 
 app.get("/CollegeFeed", async (req, res) => {
 
@@ -960,7 +1045,7 @@ app.post('/Login', async (req, res) => {
     const { email, password } = req.body
     console.log(req.body);
     const user = await User.findOne({ email })
-    const college = await College.findOne({ email })
+    const college = await College.findOne({ email, __v: 1 })
     const admin = await Admin.findOne({ email })
 
     if (user) {

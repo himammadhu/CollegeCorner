@@ -13,10 +13,10 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 const Navbar = ({setCheck,check}) => {
 
   return (
-    <div className="navbar">
+    <div className="navbar" >
       <div className="left">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span>CoLLeGeCorNEr</span>
+          <span>CoLLegECorNEr</span>
         </Link>
         <HomeOutlinedIcon />
         {

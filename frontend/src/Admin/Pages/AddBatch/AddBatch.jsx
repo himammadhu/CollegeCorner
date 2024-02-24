@@ -23,8 +23,8 @@ const AddBatch = () => {
 
         <Box sx={{ display: 'center', justifyContent: 'center', m: 5 }} component={'form'} onSubmit={handleSubmit}>
 
-            <Card sx={{ width: 400}}>
-                <Typography variant='h5' align='center' sx={{p:3}} >Add College</Typography>
+            <Card sx={{ width: 400 }}>
+                <Typography variant='h5' align='center' sx={{ p: 3 }} >Add College</Typography>
                 <Stack sx={{ m: 5 }} gap={3} direction={'column'}>
                     <TextField id="standard-basic" label="Batch" variant="standard" value={Name} onChange={(e) => setName(e.target.value)} />
 

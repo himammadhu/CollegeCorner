@@ -7,6 +7,9 @@ import AddCollage from './Pages/AddCollage/AddCollage'
 import { Box } from '@mui/material'
 import AddBatch from './Pages/AddBatch/AddBatch'
 import AddHierarchy from './Pages/AddHierarchi/AddHierarchy'
+import Verification from './Pages/Verification/Verification'
+import Accepted from './Pages/Accepted/Accepted'
+import Rejected from './Pages/Rejected/Rejected'
 
 
 
@@ -21,7 +24,7 @@ const App = () => {
         <SideBar />
         <div className="homeContainer">
           <NavBar />
-          <Box>
+          <Box sx={{p:3}}>
 
 
             <Routes>
@@ -29,6 +32,9 @@ const App = () => {
               <Route path="/College" element={<AddCollage />} />
               <Route path="/Batch" element={<AddBatch />} />
               <Route path="/Hierarchy" element={<AddHierarchy />} />
+              <Route path="/Verification" element={<Verification />} />
+              <Route path="/Accepted" element={<Accepted />} />
+              <Route path="/Rejected" element={<Rejected />} />
 
             </Routes>
           </Box>
