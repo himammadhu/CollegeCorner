@@ -4,94 +4,32 @@ const bodyParser = require('body-parser')
 const app = express()
 const PORT = 5000;
 const mongoDB = require("./config/DB");
+const multer = require("multer");
+
 const mongoose = require('mongoose');
 
 
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("./public"));
+
+
+const PATH = "./public/images";
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: PATH,
+    filename: function (req, file, cb) {
+      let origialname = file.originalname;
+      let ext = origialname.split(".").pop();
+      let filename = origialname.split(".").slice(0, -1).join(".");
+      cb(null, filename + "." + ext);
+    },
+  }),
+});
 
 //models
 
-const districtSchema = new mongoose.Schema({
-  district: {
-    type: String,
-  }
-});
-const District = mongoose.model("district", districtSchema);
-
-
-
-const placeSchema = new mongoose.Schema({
-  place: {
-    type: String
-  }
-});
-const Place = mongoose.model("place", placeSchema);
-
-//routes
-app.post("/District", async (req, res) => {
-  const { district } = req.body;
-  try {
-    const districtData = new District({
-      district,
-    });
-    await districtData.save();
-
-    res.json({ message: "District inserted succesfully" });
-
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
-
-app.get("/District", async (req, res) => {
-
-  try {
-    let districtlist = await District.find();
-
-    res.json({ districtlist });
-
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
-app.delete("/District/:Id", async (req, res) => {
-
-  try {
-    const Id = req.params.Id;
-    const deleteDistrict = await District.findByIdAndDelete(Id)
-
-
-    res.json({ message: "hi" });
-
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
-
-app.post("/Place", async (req, res) => {
-  const { district } = req.body;
-  try {
-    const districtData = new District({
-      place,
-    });
-    await districtData.save();
-
-    res.json({ message: "Place inserted succesfully" });
-
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
 
 
 app.listen(PORT, () => {
@@ -101,29 +39,110 @@ app.listen(PORT, () => {
 
 });
 
-app.get("/Test", (req, res) => {
-  res.send({
-    message: "Hai",
 
-  });
+//Admin Schema
 
-});
-app.get("/Test1", (req, res) => {
-  res.send({
-    message: "Welcome"
-  });
-});
+const adminSchemaStucture = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+  },
+})
 
+const Admin = mongoose.model('adminSchema', adminSchemaStucture)
+
+// Admin Insert
+
+app.post('/Admin', async (req, res) => {
+  try {
+    const { name, email, password } = req.body
+    // let admin = await Admin.findOne({ email })
+
+    // if (admin) {
+    //     return res
+    //         .status(400)
+    //         .json({ errors: [{ msg: 'Admin already exists' }] })
+    // }
+
+    let admin = new Admin({
+      name,
+      email,
+      password,
+    })
+
+    await admin.save()
+
+    res.json({ message: 'Admin inserted successfully' })
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server error')
+  }
+})
+
+// select Admin
+
+app.get('/Admin', async (req, res) => {
+  const admin = await Admin.find()
+  res.send({ admin })
+})
+
+//Delete Admin
+
+app.delete('/Admin/:id', async (req, res) => {
+  try {
+    const Id = req.params.id
+    console.log(Id)
+
+    const deletedAdmin = await Admin.findByIdAndDelete(Id)
+
+    if (!deletedAdmin) {
+      return res.status(404).json({ message: 'Admin not found' })
+    }
+
+    res.json({ message: 'Admin deleted successfully', deletedAdmin })
+  } catch (err) {
+    console.error('Error deleting Admin:', err)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
+//Admin update
+
+app.put('/updateAdmin/:id', async (req, res) => {
+  const id = req.params.id
+  try {
+    const { name, email, password } = req.body
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      id,
+      { name, email, password },
+      { new: true }
+    )
+    res.json(updatedAdmin)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('server error')
+  }
+})
 
 
 const collegeSchemaStructure = new mongoose.Schema({
-  Name: {
+  name: {
     type: String,
   },
-  Email: {
+  email: {
     type: String,
   },
-  Password: {
+  password: {
     type: String,
   },
   Bio: {
@@ -131,27 +150,37 @@ const collegeSchemaStructure = new mongoose.Schema({
   },
   Photo: {
     type: String,
+  },
+  Proof: {
+    type: String,
   }
 });
 //insert
 const College = mongoose.model("collegeSchema", collegeSchemaStructure);
 
-app.post("/College", async (req, res) => {
-  const { Name, Email, Password, Bio, Photo } = req.body;
-  try {
-    const collegeSchemaData = new College({
-      Name, Email, Password, Bio, Photo,
-    });
-    await collegeSchemaData.save();
+app.post("/College",
+  upload.fields([
+    { name: "Proof", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      var fileValue = JSON.parse(JSON.stringify(req.files));
+      var Proof = `http://127.0.0.1:${PORT}/images/${fileValue.Proof[0].filename}`;
 
-    res.json({ message: "College inserted succesfully" });
+      const { name, email, password } = req.body;
+      const collegeSchemaData = new College({
+        name, email, password, Proof
+      });
+      await collegeSchemaData.save();
 
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
+      res.json({ message: "College inserted succesfully" });
+
+    }
+    catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server error");
+    }
+  })
 //select
 app.get("/College", async (req, res) => {
 
@@ -209,13 +238,13 @@ app.put("/College/:id", async (req, res) => {
 
 
 const UserSchemaStructure = new mongoose.Schema({
-  FullName: {
+  name: {
     type: String,
   },
   UserName: {
     type: String,
   },
-  Password: {
+  password: {
     type: String,
   },
   Bio: {
@@ -224,10 +253,10 @@ const UserSchemaStructure = new mongoose.Schema({
   ProfilePhoto: {
     type: String,
   },
-  Email: {
+  email: {
     type: String,
   },
-  HierarchyId: {
+  hierarchy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "HierarchySchema",
     required: true
@@ -237,17 +266,20 @@ const UserSchemaStructure = new mongoose.Schema({
     ref: "collegeSchema",
     required: true
   },
-  DOB: {
-    type: String,
+  batch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "batchSchema",
+    required: true
   },
+
 });
 const User = mongoose.model("UserSchema", UserSchemaStructure);
 //insert
 app.post("/User", async (req, res) => {
-  const { FullName, UserName, Email, Password, Bio, ProfilePhoto, HierarchyId, CollegeId, DOB } = req.body;
+  const { name, email, password,  hierarchy, CollegeId, batch } = req.body;
   try {
     const UserSchemaData = new User({
-      FullName, UserName, Email, Password, Bio, ProfilePhoto, HierarchyId, CollegeId, DOB
+      name, email, password,  hierarchy, CollegeId, batch
     });
     await UserSchemaData.save();
 
@@ -309,6 +341,50 @@ app.put("/User/:id", async (req, res) => {
 
   }
 });
+
+
+
+
+
+
+const BatchSchemaStructure = new mongoose.Schema({
+  Name: {
+    type: String,
+  },
+
+});
+const Batch = mongoose.model("BatchSchema", BatchSchemaStructure);
+//insert
+app.post("/Batch", async (req, res) => {
+  const { Name } = req.body;
+  try {
+    const BatchSchemaData = new Batch({
+      Name,
+    });
+    await BatchSchemaData.save();
+
+    res.json({ message: "Batch inserted succesfully" });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+//select
+app.get("/Batch", async (req, res) => {
+
+  try {
+    let Batchlist = await Batch.find();
+
+    res.json({ Batchlist });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
 
 
 
@@ -581,7 +657,6 @@ const UserFeedSchemaStructure = new mongoose.Schema({
   UserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserSchema",
-    required: true
   },
   UserFeedContent: {
     type: String,
@@ -598,22 +673,29 @@ const UserFeedSchemaStructure = new mongoose.Schema({
 });
 const UserFeed = mongoose.model("userFeedSchema", UserFeedSchemaStructure);
 
-app.post("/UserFeed", async (req, res) => {
-  const { UserFeedDateTime, UserId, UserFeedContent, UserFeedDescription, UserFeedTotalLike, UserFeedTotalComment } = req.body;
-  try {
-    const UserFeedSchemaData = new UserFeed({
-      UserFeedDateTime, UserId, UserFeedContent, UserFeedDescription, UserFeedTotalLike, UserFeedTotalComment
-    });
-    await UserFeedSchemaData.save();
+app.post("/UserFeed",
+  upload.fields([
+    { name: "Image", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      var fileValue = JSON.parse(JSON.stringify(req.files));
+      var UserFeedContent = `http://127.0.0.1:${PORT}/images/${fileValue.Image[0].filename}`;
 
-    res.json({ message: "UserFeed inserted succesfully" });
+      const { UserFeedDescription, } = req.body;
+      const UserFeedSchemaData = new UserFeed({
+        UserFeedContent, UserFeedDescription,
+      });
+      await UserFeedSchemaData.save();
 
-  }
-  catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-})
+      res.json({ message: "UserFeed inserted succesfully" });
+
+    }
+    catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server error");
+    }
+  })
 
 app.get("/UserFeed", async (req, res) => {
 
@@ -745,7 +827,7 @@ const CommentSchemaStructure = new mongoose.Schema({
     ref: "UserSchema",
     required: true
   },
-  Content:{
+  Content: {
     type: String,
   }
 
@@ -753,7 +835,7 @@ const CommentSchemaStructure = new mongoose.Schema({
 const Comment = mongoose.model("CommentSchema", CommentSchemaStructure);
 
 app.post("/Comment", async (req, res) => {
-  const { CollegefeedId, UserFeedId, UserId,Content } = req.body;
+  const { CollegefeedId, UserFeedId, UserId, Content } = req.body;
   try {
     const CommentSchemaData = new Comment({
       CollegefeedId, UserFeedId, UserId, Content
@@ -873,3 +955,42 @@ app.get("/Complaint", async (req, res) => {
 
 
 
+app.post('/Login', async (req, res) => {
+  try {
+    const { email, password } = req.body
+    console.log(req.body);
+    const user = await User.findOne({ email })
+    const college = await College.findOne({ email })
+    const admin = await Admin.findOne({ email })
+
+    if (user) {
+      if (user.password == password) {
+        res.send({
+          id: user._id,
+          login: 'user',
+        })
+      }
+    } else if (college) {
+      if (college.password == password) {
+
+        res.send({
+          id: college._id,
+          login: 'college',
+        })
+      }
+    } else if (admin) {
+      if (admin.password == password) {
+
+        res.send({
+          id: admin._id,
+          login: 'admin',
+        })
+      }
+    } else {
+      res.send({
+        id: user._id,
+        login: 'Invalid credential',
+      })
+    }
+  } catch (error) { }
+})

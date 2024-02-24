@@ -5,6 +5,8 @@ import SideBar from './components/sidebar/SideBar'
 import NavBar from './components/navbar/NavBar'
 import AddCollage from './Pages/AddCollage/AddCollage'
 import { Box } from '@mui/material'
+import AddBatch from './Pages/AddBatch/AddBatch'
+import AddHierarchy from './Pages/AddHierarchi/AddHierarchy'
 
 
 
@@ -25,6 +27,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/College" element={<AddCollage />} />
+              <Route path="/Batch" element={<AddBatch />} />
+              <Route path="/Hierarchy" element={<AddHierarchy />} />
 
             </Routes>
           </Box>

@@ -6,7 +6,7 @@
   justify-content: center;
 
   .card {
-    width: 50%;
+    width: 60%;
     display: flex;
     background-color: rgb(212, 233, 237);
     border-radius: 10px;
@@ -26,7 +26,7 @@
       color: white;
 
       h1 {
-        font-size: 65px;
+        font-size: 70px;
         line-height: 100px;
       }
       
@@ -42,7 +42,8 @@
         padding: 10px;
         border: none;
         background-color: white;
-        color: rgb(24, 73, 104);
+        border-radius: 7px;
+        color: rgb(20, 82, 96);
         font-weight: bold;
         cursor: pointer;
       }
@@ -60,7 +61,7 @@
       color: #12495a;
       }
       
-      form {
+      .form {
         display: flex;
         flex-direction: column;
         gap: 30px;
@@ -72,13 +73,15 @@
         }
         
         button {
-          width: 50%;
+          width: 60%;
           padding: 10px;
           border: none;
           background-color: #1e6083;
+          border-radius: 7px;
           color: white;
           font-weight: bold;
           cursor: pointer;
+          margin-left: 50px;
         }
       }
     }
