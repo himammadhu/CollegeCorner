@@ -900,12 +900,10 @@ const CommentSchemaStructure = new mongoose.Schema({
   CollegefeedId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "CollegeFeedSchema",
-    required: true
   },
   UserFeedId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserFeedSchema",
-    required: true
   },
   UserId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -936,11 +934,11 @@ app.post("/Comment", async (req, res) => {
   }
 })
 
-app.get("/Comment", async (req, res) => {
+app.get("/CollegeComment/:Id", async (req, res) => {
+  const Id = req.params.Id
 
   try {
-    let Commentlist = await Comment.find().populate('UserId');
-
+    let Commentlist = await Comment.find({CollegefeedId:Id}).populate('UserId');
     res.json({ Commentlist });
 
   }
