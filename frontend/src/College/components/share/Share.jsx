@@ -2,14 +2,18 @@ import "./share.scss";
 import Image from "../../assets/img.png";
 import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios'
-import { Button } from '@mui/material'
+import { Avatar, Button } from '@mui/material'
 
-const Share = () => {
+const Share = ({fetchCollegeFeed}) => {
 
   const [image, setImage] = useState(null);
   const [description, setDescription] = useState();
+    
+  const [collegeData, setCollegeData] = useState([])
+  const [logo, setLogo] = useState('')
+  const Id = sessionStorage.getItem('cId')
 
   const HandleSubmit = () => {
     const frm = new FormData();
@@ -22,19 +26,37 @@ const Share = () => {
       console.log(response.data);
       setDescription('')
       setImage(null)
+      fetchCollegeFeed()
     })
 
 
   }
 
+
+
+
+  const fetchCollegeData = () => {
+    axios.get(`http://localhost:5000/CollegeOne/${Id}`).then((response) => {
+      setLogo(response.data.CollegeData.name.charAt(0))
+      setCollegeData(response.data.CollegeData)
+    })
+  }
+
+  useEffect(() => {
+    fetchCollegeData()
+  }, [])
+
   return (
     <div className="share">
       <div className="container">
         <div className="top">
-          <img
-            src={''}
-            alt=""
-          />
+        {collegeData.photo ? (
+            <img src={collegeData.photo} alt={collegeData.name} />
+          ) : (
+            <Avatar className="avatar">{
+              collegeData &&
+              logo}</Avatar>
+          )}
           <input type="text" placeholder={`What's on your mind ${''}?`} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <hr />

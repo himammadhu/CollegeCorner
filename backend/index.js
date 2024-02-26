@@ -5,9 +5,9 @@ const app = express()
 const PORT = 5000;
 const mongoDB = require("./config/DB");
 const multer = require("multer");
+const moment = require('moment')
 
 const mongoose = require('mongoose');
-
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -181,6 +181,23 @@ app.post("/College",
       res.status(500).send("Server error");
     }
   })
+
+//select
+app.get("/CollegeOne/:Id", async (req, res) => {
+  const Id = req.params.Id
+
+  try {
+    let CollegeData = await College.findOne({ _id: Id });
+
+    res.json({ CollegeData });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
 //select
 app.get("/College", async (req, res) => {
 
@@ -669,10 +686,10 @@ app.post("/CollegeFeed",
       var fileValue = JSON.parse(JSON.stringify(req.files));
       var CollegeFeedContent = `http://127.0.0.1:${PORT}/images/${fileValue.CollegeFeedContent[0].filename}`;
 
-      const { CollegeFeedDateTime, CollegeId, CollegeDiscription } = req.body;
+      const { CollegeId, CollegeDiscription } = req.body;
 
       const CollegeFeedSchemaData = new CollegeFeed({
-        CollegeFeedDateTime, CollegeFeedContent, CollegeId, CollegeDiscription
+        CollegeFeedDateTime: moment().format(), CollegeFeedContent, CollegeId, CollegeDiscription
       });
       await CollegeFeedSchemaData.save();
 
@@ -685,26 +702,33 @@ app.post("/CollegeFeed",
     }
   })
 
-app.get("/CollegeFeed", async (req, res) => {
 
+app.get("/CollegeFeed/:Id", async (req, res) => {
   try {
+    const Id = req.params.Id
     let CollegeFeedlist = await CollegeFeed.find().populate('CollegeId');
 
-    res.json({ CollegeFeedlist });
+    CollegeFeedlist = await Promise.all(CollegeFeedlist.map(async (feed) => {
+      const uploadedTime = moment(feed.CollegeFeedDateTime);
+      const currentTime = moment();
+      const timeDifference = moment.duration(currentTime.diff(uploadedTime));
+      feed = feed.toJSON(); // Convert Mongoose document to plain JavaScript object
+      feed.timeDifference = timeDifference.humanize(); // Format the time difference
 
-  }
-  catch (err) {
+      return feed;
+    }));
+    console.log(CollegeFeedlist);
+    res.json({ CollegeFeedlist });
+  } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
-})
-
+});
 app.delete("/CollegeFeed/:Id", async (req, res) => {
 
   try {
     const Id = req.params.Id;
-    const deleteCollegeFeed = await CollegeFeed.findByIdAndDelete(Id)
-
+    await CollegeFeed.findByIdAndDelete(Id)
 
     res.json({ message: "Feed Deleted" });
 
@@ -845,14 +869,15 @@ const LikeSchemaStructure = new mongoose.Schema({
     required: true
   },
 
+
 });
 const Like = mongoose.model("LikeSchema", LikeSchemaStructure);
 
-app.post("/Like", async (req, res) => {
-  const { CollegefeedId, UserFeedId, UserId } = req.body;
+app.post("/LikeCollegeFeed", async (req, res) => {
   try {
+    const { CollegefeedId, UserId } = req.body;
     const LikeSchemaData = new Like({
-      CollegefeedId, UserFeedId, UserId
+      CollegefeedId, UserId
     });
     await LikeSchemaData.save();
 
@@ -865,10 +890,32 @@ app.post("/Like", async (req, res) => {
   }
 })
 
-app.get("/Like", async (req, res) => {
+
+app.post("/Like", async (req, res) => {
+  try {
+    const {  UserFeedId, UserId } = req.body;
+    const LikeSchemaData = new Like({
+      UserFeedId, UserId
+    });
+    await LikeSchemaData.save();
+
+    res.json({ message: "Like inserted succesfully" });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
+
 
   try {
-    let Likelist = await Like.find().populate('UserId');
+    const Fid = req.params.Fid
+    const Uid = req.params.Uid
+    let Like = await Like.findOne({CollegefeedId:Fid,UserId:Uid});
+    let count 
 
     res.json({ Likelist });
 
@@ -938,7 +985,7 @@ app.get("/CollegeComment/:Id", async (req, res) => {
   const Id = req.params.Id
 
   try {
-    let Commentlist = await Comment.find({CollegefeedId:Id}).populate('UserId');
+    let Commentlist = await Comment.find({ CollegefeedId: Id }).populate('UserId');
     res.json({ Commentlist });
 
   }

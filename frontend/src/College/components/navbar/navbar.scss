@@ -1,5 +1,7 @@
 @import "../../style.scss";
 
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+
 .navbar {
   @include themify($themes) {
     display: flex;
@@ -23,15 +25,16 @@
         font-weight: bold;
         font-size: 20px;
         color: themed("logo");
+        font-family: "Dancing Script", cursive;
+        font-optical-sizing: auto;
+        font-weight: 700;
+        font-style: normal;
       }
 
-      .search {
+      .search-Box {
         display: flex;
         align-items: center;
-        gap: 10px;
-        border: 1px solid themed("border");
-        border-radius: 5px;
-        padding: 5px;
+       
 
         input {
           border: none;

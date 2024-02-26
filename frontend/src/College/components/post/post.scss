@@ -31,13 +31,15 @@
           .details {
             display: flex;
             flex-direction: column;
+            justify-content: center;
 
             .name {
               font-weight: 500;
             }
 
             .date {
-              font-size: 12px;
+              font-size: 14px;
+             
             }
           }
         }

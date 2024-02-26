@@ -9,24 +9,44 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link } from "react-router-dom";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Avatar } from "@mui/material";
 
-const Navbar = ({setCheck,check}) => {
+const Navbar = ({ setCheck, check }) => {
+
+
+
+  const [collegeData, setCollegeData] = useState([])
+  const [logo, setLogo] = useState('')
+  const Id = sessionStorage.getItem('cId')
+
+  const fetchCollegeData = () => {
+    axios.get(`http://localhost:5000/CollegeOne/${Id}`).then((response) => {
+      console.log(response.data.CollegeData);
+      setLogo(response.data.CollegeData.name.charAt(0))
+      setCollegeData(response.data.CollegeData)
+    })
+  }
+
+  useEffect(() => {
+    fetchCollegeData()
+  }, [])
 
   return (
     <div className="navbar">
       <div className="left">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span>CoLLeGeCorNEr</span>
+          <span>CollegeCorner</span>
         </Link>
         <HomeOutlinedIcon />
         {
-          check ? <LightModeIcon onClick={() => {setCheck(!check)}}/>:<DarkModeIcon onClick={() => {setCheck(!check)}}/>
+          check ? <LightModeIcon onClick={() => { setCheck(!check) }} /> : <DarkModeIcon onClick={() => { setCheck(!check) }} />
         }
-       
+
         <GridViewOutlinedIcon />
-        <div className="search">
-          <SearchOutlinedIcon />
-          <input type="text" placeholder="Search..." />
+        <div className="search-Box">
+
         </div>
       </div>
       <div className="right">
@@ -34,10 +54,13 @@ const Navbar = ({setCheck,check}) => {
         <EmailOutlinedIcon />
         <NotificationsOutlinedIcon />
         <div className="user">
-          <img
-            src={''}
-            alt=""
-          />
+          {collegeData.photo ? (
+            <img src={collegeData.photo} alt={collegeData.name} />
+          ) : (
+            <Avatar className="avatar">{
+              collegeData &&
+              logo}</Avatar>
+          )}
           <span>{''}</span>
         </div>
       </div>
