@@ -16,6 +16,7 @@ const Post = ({ post, fetchCollegeFeed }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [liked, setLiked] = useState(false)
+  const [count, setCount] = useState(false)
 
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -38,21 +39,25 @@ const Post = ({ post, fetchCollegeFeed }) => {
       CollegefeedId: fId,
       UserId: Id
     }
-    axios.post(`http://localhost:5000/LikeCollegeFeed`, data).then((response) => {
-      console.log(response.data)
+    axios.post(`http://localhost:5000/LikeCollegeFeed`, data).then(() => {
+      LikeDetails(post._id)
+
 
     })
   }
-  const RemoveLike = (Id) => {
-    axios.delete(`http://localhost:5000/rejectCollege/${Id}`).then((response) => {
-      console.log(response.data)
+  const RemoveLike = (fId) => {
+    axios.delete(`http://localhost:5000/Like/${Id}/${fId}`).then(() => {
+      LikeDetails(post._id)
+
+      
     })
   }
 
 
   const LikeDetails = (fId) => {
     axios.get(`http://localhost:5000/LikeDetails/${Id}/${fId}`).then((response) => {
-      console.log(response.data)
+      setLiked(response.data.like)
+      setCount(response.data.count)
     })
   }
 
@@ -99,8 +104,8 @@ const Post = ({ post, fetchCollegeFeed }) => {
           </div>
           <div className="info">
             <div className="item">
-              {liked ? <FavoriteOutlinedIcon onClick={() => RemoveLike(post._id)} /> : <FavoriteBorderOutlinedIcon onClick={() => AddLike(post._id)} />}
-              12 Likes
+              {liked ? <FavoriteOutlinedIcon color="error" onClick={() => RemoveLike(post._id)} /> : <FavoriteBorderOutlinedIcon onClick={() => AddLike(post._id)} />}
+             {count} Like
             </div>
             <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
               <TextsmsOutlinedIcon />

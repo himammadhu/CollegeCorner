@@ -22,11 +22,7 @@ const Comments = () => {
   ];
   return (
     <div className="comments">
-      <div className="write">
-        <img src={''} alt="" />
-        <input type="text" placeholder="write a comment" />
-        <button>Send</button>
-      </div>
+      
       {comments.map((comment) => (
         <div className="comment">
           <img src={comment.profilePicture} alt="" />
@@ -37,6 +33,11 @@ const Comments = () => {
           <span className="date">1 hour ago</span>
         </div>
       ))}
+      <div className="write">
+        <img src={''} alt="" />
+        <input type="text" placeholder="write a comment" />
+        <button>Send</button>
+      </div>
     </div>
   );
 };

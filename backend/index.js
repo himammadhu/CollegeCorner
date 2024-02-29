@@ -914,10 +914,10 @@ app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
   try {
     const Fid = req.params.Fid
     const Uid = req.params.Uid
-    let Like = await Like.findOne({CollegefeedId:Fid,UserId:Uid});
-    let count 
+    let like = await Like.findOne({CollegefeedId:Fid,UserId:Uid}) ? true : false;
+    let count = await Like.countDocuments({CollegefeedId:Fid})
 
-    res.json({ Likelist });
+    res.json({ like ,count});
 
   }
   catch (err) {
@@ -926,11 +926,12 @@ app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
   }
 })
 
-app.delete("/Like/:Id", async (req, res) => {
+app.delete("/Like/:Id/:fId", async (req, res) => {
 
   try {
     const Id = req.params.Id;
-    const deleteLike = await Like.findByIdAndDelete(Id)
+    const fId = req.params.fId
+     await Like.deleteOne({UserId:Id,CollegefeedId:fId})
 
 
     res.json({ message: "Deleted" });
