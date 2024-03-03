@@ -703,9 +703,8 @@ app.post("/CollegeFeed",
   })
 
 
-app.get("/CollegeFeed/:Id", async (req, res) => {
+app.get("/CollegeFeed", async (req, res) => {
   try {
-    const Id = req.params.Id
     let CollegeFeedlist = await CollegeFeed.find().populate('CollegeId');
 
     CollegeFeedlist = await Promise.all(CollegeFeedlist.map(async (feed) => {
@@ -966,10 +965,10 @@ const CommentSchemaStructure = new mongoose.Schema({
 const Comment = mongoose.model("CommentSchema", CommentSchemaStructure);
 
 app.post("/Comment", async (req, res) => {
-  const { CollegefeedId, UserFeedId, UserId, Content } = req.body;
+  const { CollegefeedId, UserId, Content } = req.body;
   try {
     const CommentSchemaData = new Comment({
-      CollegefeedId, UserFeedId, UserId, Content
+      CollegefeedId, UserId, Content
     });
     await CommentSchemaData.save();
 

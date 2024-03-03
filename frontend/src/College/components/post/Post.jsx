@@ -116,7 +116,7 @@ const Post = ({ post, fetchCollegeFeed }) => {
               Share
             </div>
           </div>
-          {commentOpen && <Comments />}
+          {commentOpen && <Comments postId={post._id} />}
         </div>
       </div>
     </>

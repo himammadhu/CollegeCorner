@@ -17,6 +17,7 @@ const Home = () => {
       setCollegeFeedData(response.data.CollegeFeedlist)
     })
   }
+  
 
   useEffect(() => {
     fetchCollegeFeed()

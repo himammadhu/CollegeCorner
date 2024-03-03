@@ -2,40 +2,53 @@ import { useEffect, useState } from "react";
 import "./comments.scss";
 import axios from "axios";
 
-const Comments = ({props}) => {
+const Comments = ({postId}) => {
+  console.log(postId);
+  const Uid = sessionStorage.getItem('uId')
 
-  
-  const [collegeCommentData,setCollegeCommentData] = useState([])
   const [comment, setComment] = useState('')
+  const [commentData,setCommentData] = useState([])
 
-  const fetchCollegeFeedComment = () => {
-    axios.get(`http://localhost:5000/CollegeComment/${props}`).then((response) => {
+  const handleComment = () => {
+    const data = {
+      Content:comment,
+      UserId:Uid,
+      CollegefeedId:postId
+    }
+    axios.post(`http://localhost:5000/Comment`,data).then((response) => {
       console.log(response.data.Commentlist);
-      setCollegeCommentData(response.data.Commentlist)
+      })
+  }
+
+  const fetchComment = () => {
+    axios.get(`http://localhost:5000/CollegeComment/${postId}`).then((response) => {
+      console.log(response.data.Commentlist);
+    setCommentData(response.data.Commentlist)
     })
   }
 
   useEffect(() => {
-    fetchCollegeFeedComment()
-  }, [])
- 
+    fetchComment()
+  },[])
+
+
   return (
     <div className="comments">
-    
-      {collegeCommentData.map((comment) => (
+      
+      {commentData.map((comment) => (
         <div className="comment">
           <img src={comment.profilePicture} alt="" />
           <div className="info">
-            <span>{comment.name}</span>
-            <p>{comment.desc}</p>
+            <span>{}</span>
+            <p>{comment.Content}</p>
           </div>
           <span className="date">1 hour ago</span>
         </div>
       ))}
-        <div className="write">
+      <div className="write">
         <img src={''} alt="" />
-        <input type="text" placeholder="write a comment" onChange={(event) => setComment(event.target.value)} />
-        <button>Send</button>
+        <input type="text" placeholder="write a comment" value={comment} onChange={(event) => setComment(event.target.value)} />
+        <button onClick={handleComment}>Send</button>
       </div>
     </div>
   );
