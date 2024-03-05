@@ -9,10 +9,10 @@ const Home = () => {
 
   
   const [collegeFeedData,setCollegeFeedData] = useState([])
-  const Id = sessionStorage.getItem('cId')
+  // const Id = sessionStorage.getItem('cId')
 
   const fetchCollegeFeed = () => {
-    axios.get( `http://localhost:5000/CollegeFeed/${Id}`).then((response) => {
+    axios.get( `http://localhost:5000/CollegeFeed`).then((response) => {
       console.log(response.data.CollegeFeedlist);
       setCollegeFeedData(response.data.CollegeFeedlist)
     })

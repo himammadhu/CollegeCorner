@@ -6,6 +6,8 @@ const PORT = 5000;
 const mongoDB = require("./config/DB");
 const multer = require("multer");
 const moment = require('moment')
+const { createServer } = require('http')
+const { Server } = require('socket.io')
 
 const mongoose = require('mongoose');
 
@@ -13,6 +15,24 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
+
+
+const httpServer = createServer(app)
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:3000',
+  },
+})
+
+
+
+
+httpServer.listen(PORT, async () => {
+  mongoDB().then(() => {
+    console.log("Server is Running");
+  })
+
+});
 
 
 const PATH = "./public/images";
@@ -30,14 +50,6 @@ const upload = multer({
 
 //models
 
-
-
-app.listen(PORT, () => {
-  mongoDB().then(() => {
-    console.log("Server is Running");
-  })
-
-});
 
 
 //Admin Schema
@@ -399,6 +411,52 @@ app.get("/User", async (req, res) => {
     res.status(500).send("Server error");
   }
 })
+
+
+app.post("/SearchUser", async (req, res) => {
+  try {
+    const { userName, Id } = req.body;
+    const objectId = new mongoose.Types.ObjectId(Id); // Convert Id to ObjectId
+    console.log(objectId);
+    // Using a regular expression for a case-insensitive search
+    const userData = await User.find({
+      $and: [
+        { _id: { $ne: objectId } }, // Exclude the currently authenticated user
+        { name: { $regex: userName, $options: 'i' } }
+      ]
+    });
+    // console.log(userData);
+    if (userData && userData.length > 0) {
+      // Check if there is a room with matching fromId or toId for the current user
+      const chatList = await ChatList.find({
+        $or: [
+          { ChatListUserOne: objectId, ChatListUserTwo: { $in: userData.map(user => user._id) } },
+          { ChatListUserTwo: objectId, ChatListUserOne: { $in: userData.map(user => user._id) } },
+        ],
+      });
+
+      // console.log(chatList);
+
+      // Add a field indicating whether a room exists or not
+      // Use map to create a new array with the modified objects
+      const userDataWithRooms = userData.map(user => ({
+        ...user.toObject(),
+        hasRoom: chatList.some(room =>
+          (room.ChatListUserOne.equals(objectId) && room.ChatListUserTwo.equals(user._id)) ||
+          (room.ChatListUserTwo.equals(objectId) && room.ChatListUserOne.equals(user._id))
+        ),
+      }));
+
+      console.log(userDataWithRooms);
+      return res.status(200).json({ userDataWithRooms });
+    } else {
+      return res.status(200).json({ userDataWithRooms: [] });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //delete
 app.delete("/User/:Id", async (req, res) => {
 
@@ -524,23 +582,29 @@ app.get("/Hierarchy", async (req, res) => {
 
 
 const ChatListSchemaStructure = new mongoose.Schema({
-  ChatListUser1: {
-    type: String,
+  ChatListUserOne: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserSchema",
+    required: true
   },
-  ChatListUser2: {
-    type: String,
+  ChatListUserTwo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserSchema",
+    required: true
   }
 
 });
 const ChatList = mongoose.model("ChatListSchema", ChatListSchemaStructure);
 //insert
 app.post("/ChatList", async (req, res) => {
-  const { ChatListUser1, ChatListUser2 } = req.body;
+  const { ChatListUserOne, ChatListUserTwo } = req.body;
   try {
     const ChatListSchemaData = new ChatList({
-      ChatListUser1, ChatListUser2
+      ChatListUserOne, ChatListUserTwo
     });
     await ChatListSchemaData.save();
+    io.sockets.emit('fromServerFollowRequest')
+
 
     res.json({ message: "ChatList inserted succesfully" });
 
@@ -554,10 +618,46 @@ app.post("/ChatList", async (req, res) => {
 app.get("/ChatList/:id", async (req, res) => {
 
   try {
-    let ChatListlist = await ChatList.find();
+    const Id = req.params.id
+    let ChatListlist = await ChatList.find({ ChatListUserTwo: Id, __v: 0 }).populate('ChatListUserOne');
 
-    // const id = req.params.id
-    // let ChatListlist= await ChatList.find({ChatListUser1:id});
+
+    res.json({ ChatListlist });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+
+
+app.get("/ChatListFriends/:id", async (req, res) => {
+
+  try {
+    const Id = req.params.id
+
+    let ChatListlist = await ChatList.find({
+      $or: [
+        { ChatListUserTwo: Id },
+        { ChatListUserOne: Id }
+      ],
+      __v: 1
+    }).populate('ChatListUserOne');
+
+    if (!ChatListlist.length) {
+      // If no document is found with the specified Id in ChatListUserOne or ChatListUserTwo,
+      // try populating the other field
+      ChatListlist = await ChatList.find({
+        $or: [
+          { ChatListUserOne: Id },
+          { ChatListUserTwo: Id }
+        ],
+        __v: 1
+      }).populate('ChatListUserTwo');
+    }
+
 
     res.json({ ChatListlist });
 
@@ -576,6 +676,27 @@ app.delete("/ChatList/:Id", async (req, res) => {
 
 
     res.json({ message: "ChatList Deleted" });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+
+app.put("/ChatListAccept/:Id", async (req, res) => {
+
+  try {
+    const Id = req.params.Id
+    const ChatListlist = await ChatList.findByIdAndUpdate(
+      Id,
+      { __v: 1 },
+      { new: true }
+    );
+
+
+    res.json({ ChatListlist });
 
   }
   catch (err) {
@@ -716,13 +837,38 @@ app.get("/CollegeFeed", async (req, res) => {
 
       return feed;
     }));
-    console.log(CollegeFeedlist);
     res.json({ CollegeFeedlist });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
 });
+
+
+
+app.get("/CollegeFeed/:Id", async (req, res) => {
+  try {
+    const Id = req.params.Id
+    let CollegeFeedlist = await CollegeFeed.find({ CollegeId: Id }).populate('CollegeId');
+
+    CollegeFeedlist = await Promise.all(CollegeFeedlist.map(async (feed) => {
+      const uploadedTime = moment(feed.CollegeFeedDateTime);
+      const currentTime = moment();
+      const timeDifference = moment.duration(currentTime.diff(uploadedTime));
+      feed = feed.toJSON(); // Convert Mongoose document to plain JavaScript object
+      feed.timeDifference = timeDifference.humanize(); // Format the time difference
+
+      return feed;
+    }));
+    res.json({ CollegeFeedlist });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
+
+
+
 app.delete("/CollegeFeed/:Id", async (req, res) => {
 
   try {
@@ -892,7 +1038,7 @@ app.post("/LikeCollegeFeed", async (req, res) => {
 
 app.post("/Like", async (req, res) => {
   try {
-    const {  UserFeedId, UserId } = req.body;
+    const { UserFeedId, UserId } = req.body;
     const LikeSchemaData = new Like({
       UserFeedId, UserId
     });
@@ -913,10 +1059,10 @@ app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
   try {
     const Fid = req.params.Fid
     const Uid = req.params.Uid
-    let like = await Like.findOne({CollegefeedId:Fid,UserId:Uid}) ? true : false;
-    let count = await Like.countDocuments({CollegefeedId:Fid})
+    let like = await Like.findOne({ CollegefeedId: Fid, UserId: Uid }) ? true : false;
+    let count = await Like.countDocuments({ CollegefeedId: Fid })
 
-    res.json({ like ,count});
+    res.json({ like, count });
 
   }
   catch (err) {
@@ -930,7 +1076,7 @@ app.delete("/Like/:Id/:fId", async (req, res) => {
   try {
     const Id = req.params.Id;
     const fId = req.params.fId
-     await Like.deleteOne({UserId:Id,CollegefeedId:fId})
+    await Like.deleteOne({ UserId: Id, CollegefeedId: fId })
 
 
     res.json({ message: "Deleted" });

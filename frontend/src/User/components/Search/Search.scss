@@ -1,0 +1,11 @@
+@import "../../style.scss";
+
+.searchBox {
+  @include themify($themes) {
+   
+    background-color: themed("bg");
+    color:themed("textColor");
+
+   
+  }
+}

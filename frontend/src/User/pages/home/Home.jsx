@@ -1,14 +1,16 @@
 import Stories from "../../components/stories/Stories"
 import Posts from "../../components/posts/Posts"
-import Share from "../../components/share/Share"
+// import Share from "../../components/share/Share"
 import "./home.scss"
+import Search from "../../components/Search/Search"
 
-const Home = () => {
+const Home = ({ userdata }) => {
   return (
     <div className="home">
-      <Stories/>
+
       {/* <Share/> */}
-      <Posts/>
+      {userdata ? <Search userdata={userdata} /> : (<><Stories /> <Posts /></>)}
+
     </div>
   )
 }

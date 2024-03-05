@@ -26,13 +26,14 @@
       }
 
       .search {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+      
         border: 1px solid themed("border");
-        border-radius: 5px;
-        padding: 5px;
-
+        .logo{
+          font-weight: bold;
+        font-size: 20px;
+        color: themed("logo");
+        }
+     
         input {
           border: none;
           width: 500px;

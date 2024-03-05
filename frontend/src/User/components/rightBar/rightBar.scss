@@ -30,6 +30,7 @@
         padding: 20px;
         margin-bottom: 20px;
         background-color: themed("bg");
+        border-radius: 20px;
 
         span {
           color: gray;
@@ -81,7 +82,7 @@
 
             button {
               border: none;
-              padding: 5px;
+              padding: 4px;
               color: white;
               cursor: pointer;
 
