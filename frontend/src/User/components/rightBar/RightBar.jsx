@@ -137,7 +137,7 @@ const RightBar = () => {
                     alt=""
                   />
                   <div className="online" />
-                  <span>{user.ChatListUserOne.name}</span>
+                  <span>{user.friend.name}</span>
                 </div>
               </div>
             ))

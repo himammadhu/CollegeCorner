@@ -636,29 +636,56 @@ app.get("/ChatList/:id", async (req, res) => {
 app.get("/ChatListFriends/:id", async (req, res) => {
 
   try {
-    const Id = req.params.id
+    const ObjUser = new mongoose.Types.ObjectId(req.params.id);
 
-    let ChatListlist = await ChatList.find({
-      $or: [
-        { ChatListUserTwo: Id },
-        { ChatListUserOne: Id }
-      ],
-      __v: 1
-    }).populate('ChatListUserOne');
-
-    if (!ChatListlist.length) {
-      // If no document is found with the specified Id in ChatListUserOne or ChatListUserTwo,
-      // try populating the other field
-      ChatListlist = await ChatList.find({
-        $or: [
-          { ChatListUserOne: Id },
-          { ChatListUserTwo: Id }
-        ],
-        __v: 1
-      }).populate('ChatListUserTwo');
-    }
-
-
+    let ChatListlist = await ChatList.aggregate([
+      {
+        $match: {
+          $or: [
+            { ChatListUserOne: ObjUser },
+            { ChatListUserTwo: ObjUser }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: 'userschemas',
+          localField: 'ChatListUserOne',
+          foreignField: '_id',
+          as: 'UserOneData'
+        }
+      },
+      {
+        $lookup: {
+          from: 'userschemas',
+          localField: 'ChatListUserTwo',
+          foreignField: '_id',
+          as: 'UserTwoData'
+        }
+      },
+      {
+        $project: {
+          friend: {
+            $cond: {
+              if: { $eq: ['$ChatListUserOne', ObjUser] },
+              then: { $arrayElemAt: ['$UserTwoData', 0] },
+              else: { $arrayElemAt: ['$UserOneData', 0] }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$friend._id", // Group by friend ID
+          friend: { $first: "$friend" } // Keep the first occurrence of each friend
+        }
+      }
+      ,
+      {
+        $unwind: "$friend" // Unwind the friend field
+      }
+    ]);
+    console.log(ChatListlist);
     res.json({ ChatListlist });
 
   }
@@ -1054,8 +1081,6 @@ app.post("/Like", async (req, res) => {
 })
 
 app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
-
-
   try {
     const Fid = req.params.Fid
     const Uid = req.params.Uid
@@ -1063,6 +1088,24 @@ app.get("/LikeDetails/:Uid/:Fid", async (req, res) => {
     let count = await Like.countDocuments({ CollegefeedId: Fid })
 
     res.json({ like, count });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
+
+
+
+app.get("/commentDetails/:Uid/:Fid", async (req, res) => {
+  try {
+    const Fid = req.params.Fid
+    const Uid = req.params.Uid
+    let count = await Comment.countDocuments({ CollegefeedId: Fid, UserId: Uid })
+
+    res.json({ count });
 
   }
   catch (err) {
