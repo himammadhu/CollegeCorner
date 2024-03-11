@@ -10,9 +10,11 @@ import { useState } from "react";
 
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [liked, setLiked] = useState(false)
+  const [count, setCount] = useState(false)
 
-  //TEMPORARY
-  const liked = false;
+ 
 
   return (
     <div className="post">

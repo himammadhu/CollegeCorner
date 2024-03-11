@@ -1,18 +1,15 @@
 import "./leftBar.scss";
-import Friends from "../../assets/1.png";
-import Groups from "../../assets/2.png";
-import Market from "../../assets/3.png";
-import Watch from "../../assets/4.png";
-import Memories from "../../assets/5.png";
-import Events from "../../assets/6.png";
-import Gaming from "../../assets/7.png";
-import Gallery from "../../assets/8.png";
-import Videos from "../../assets/9.png";
-import Messages from "../../assets/10.png";
-import Tutorials from "../../assets/11.png";
-import Courses from "../../assets/12.png";
-import Fund from "../../assets/13.png";
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
+import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
+import Person2Icon from '@mui/icons-material/Person2';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from "react-router-dom";
+import { Card } from "@mui/material";
+
 
 const LeftBar = () => {
 
@@ -28,69 +25,65 @@ const LeftBar = () => {
             />
             <span>{''}</span>
           </div>
-            <Link to={'/College/AddUser'}>
+          <Link to={'/College/AddUser'}>
+            <Card sx={{ backgroundColor: 'rgb(214, 250, 249)', px: 7, py: 2, '&:hover': { backgroundColor: '#66cacbbb' }, display: 'flex', alignItems: 'center' }}>
+                <div className="item">
+                <PersonAddAltIcon className='icons' />
+                <span>Add User</span>
+
+                </div>
+            </Card>
+          </Link>
+          
+          <Card sx={{ backgroundColor: 'rgb(214, 250, 249)', px: 7, py: 2, '&:hover': { backgroundColor: '#66cacbbb' }, display: 'flex', alignItems: 'center' }}>
+
           <div className="item">
-            <img src={Friends} alt="" />
-            <span>Add Student</span>
+            <GroupAddIcon className='icons' />
+            <span>Add Groups</span>
           </div>
-            </Link>
+          </Card>
+          <Card sx={{ backgroundColor: 'rgb(214, 250, 249)', px: 7, py: 2, '&:hover': { backgroundColor: '#66cacbbb' }, display: 'flex', alignItems: 'center' }}>
+
           <div className="item">
-            <img src={Groups} alt="" />
-            <span>Groups</span>
+            <DraftsIcon className='icons' />
+            <span>Complaints</span>
           </div>
+          </Card>
+          <Card sx={{ backgroundColor: 'rgb(214, 250, 249)', px: 7, py: 2, '&:hover': { backgroundColor: '#66cacbbb' }, display: 'flex', alignItems: 'center' }}>
+
           <div className="item">
-            <img src={Market} alt="" />
-            <span>Marketplace</span>
-          </div>
-          <div className="item">
-            <img src={Watch} alt="" />
-            <span>Watch</span>
-          </div>
-          <div className="item">
-            <img src={Memories} alt="" />
+            <TimerOutlinedIcon className='icons' />
             <span>Memories</span>
           </div>
-        </div>
-        <hr />
-        <div className="menu">
-          <span>Your shortcuts</span>
+          </Card>
+          <Card sx={{ backgroundColor: 'rgb(214, 250, 249)', px: 7, py: 2, '&:hover': { backgroundColor: '#66cacbbb' }, display: 'flex', alignItems: 'center' }}>
+
           <div className="item">
-            <img src={Events} alt="" />
-            <span>Events</span>
-          </div>
-          <div className="item">
-            <img src={Gaming} alt="" />
-            <span>Gaming</span>
-          </div>
-          <div className="item">
-            <img src={Gallery} alt="" />
-            <span>Gallery</span>
-          </div>
-          <div className="item">
-            <img src={Videos} alt="" />
-            <span>Videos</span>
-          </div>
-          <div className="item">
-            <img src={Messages} alt="" />
+            <LocalPostOfficeOutlinedIcon className='icons' />
             <span>Messages</span>
           </div>
+          </Card>
         </div>
+
+
         <hr />
-        <div className="menu">
-          <span>Others</span>
-          <div className="item">
-            <img src={Fund} alt="" />
-            <span>Fundraiser</span>
-          </div>
-          <div className="item">
-            <img src={Tutorials} alt="" />
-            <span>Tutorials</span>
-          </div>
-          <div className="item">
-            <img src={Courses} alt="" />
-            <span>Courses</span>
-          </div>
+        <div className="items">
+        <Person2Icon className='icons' />
+          <span>Account</span>
         </div>
+        <hr/>
+        <div className="items">
+        <SettingsIcon className='icons' />
+          <span>Settings</span>
+        </div>
+        <hr/>
+        <div className="items">
+        <LogoutIcon className='icons' /> 
+          <span>Logout</span>
+        </div>
+        <hr/>
+
+
       </div>
     </div>
   );

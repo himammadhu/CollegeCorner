@@ -1,6 +1,7 @@
 import { Box, Button, Card, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import "./user.scss";
 
 const User = () => {
 
@@ -53,16 +54,16 @@ const User = () => {
         fetchBatch()
     }, [])
     return (
-        <Box  sx={{ display: 'center', justifyContent: 'center', m: 5 }}>
+        <Box className="box" sx={{ display: 'center', justifyContent: 'center', m: 5 }}>
 
-            <Card sx={{ width: 500 }}>
-                <Typography variant='h5' align='center' sx={{ p: 3 }}>Add User</Typography>
-                <Stack sx={{ m: 5 }} gap={3} direction={'column'}>
-                    <TextField id="standard-basic" label="Name of the User" variant="standard" onChange={(e) => setName(e.target.value)} />
-                    <TextField id="standard-basic" label="Email Id" variant="standard" onChange={(e) => setEmail(e.target.value)} />
+            <Card className='card' sx={{ width: 500 }}>
+                <Typography className='Type' variant='h5' align='center' sx={{ p: 3 }}>Add User</Typography>
+                <Stack className='Type' sx={{ m: 5 }} gap={3} direction={'column'}>
+                    <TextField  id="standard-basic" label="Name of the User" variant="standard" onChange={(e) => setName(e.target.value)} />
+                    <TextField  id="standard-basic" label="Email Id" variant="standard" onChange={(e) => setEmail(e.target.value)} />
                     <TextField id="standard-basic" label="Password" variant="standard" onChange={(e) => setPassword(e.target.value)} />
                     <FormControl variant="standard" sx={{ m: 1 }}>
-                        <InputLabel id="demo-simple-select-standard-label">Hierarchy</InputLabel>
+                        <InputLabel className='Type' id="demo-simple-select-standard-label">Hierarchy</InputLabel>
                         <Select
                             labelId="demo-simple-select-standard-label"
                             id="demo-simple-select-standard"
@@ -80,7 +81,7 @@ const User = () => {
                         </Select>
                     </FormControl>
                     <FormControl variant="standard" sx={{ m: 1 }}>
-                        <InputLabel id="demo-simple-select-standard-label">Batch</InputLabel>
+                        <InputLabel className='Type' id="demo-simple-select-standard-label">Batch</InputLabel>
                         <Select
                             labelId="demo-simple-select-standard-label"
                             id="demo-simple-select-standard"

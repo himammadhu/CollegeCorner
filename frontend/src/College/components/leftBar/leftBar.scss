@@ -59,12 +59,20 @@
           align-items: center;
           gap: 10px;
 
+
           img {
             width: 30px;
           }
 
           span {
             font-size: 14px;
+          }
+          .items{
+            gap: 10px;
+          }
+          .icons{
+            align-items: center;
+            
           }
         }
       }
