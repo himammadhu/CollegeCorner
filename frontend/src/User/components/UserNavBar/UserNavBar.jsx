@@ -1,9 +1,14 @@
 import { Avatar, Box, Card, IconButton, Popover, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { NavbarInnerFirstBox, NavbarMainContainerBox, NavbarTypography } from '../../UserStyle'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { setChat } from '../../../Context/UseContext'
 
 const UserNavBar = () => {
+
+    const { checkChat } = useContext(setChat)
+    console.log(checkChat);
+
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -20,7 +25,7 @@ const UserNavBar = () => {
         <Card sx={NavbarMainContainerBox}>
             <Box sx={NavbarInnerFirstBox}>
                 <Avatar />
-                <Typography sx={NavbarTypography}>Hello</Typography>
+                <Typography sx={NavbarTypography}>{checkChat.name}</Typography>
             </Box>
             <Box>
                 <IconButton aria-label="delete" onClick={handleClick}>

@@ -1,4 +1,4 @@
-import { Box, Card, IconButton, Popover, Typography } from '@mui/material'
+import { Box, Card, IconButton, InputAdornment, OutlinedInput, Popover, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
@@ -12,10 +12,17 @@ import {
 import ChatList from '../ChatList/ChatList'
 // import SearchComponent from './SearchComponent'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { setSocket } from '../../../Context/UseContext'
+import SearchComponent from '../SearchComponent/SearchComponent'
+
 
 const ChatNav = () => {
+  const { socket } = useContext(setSocket)
 
   const [anchorEl, setAnchorEl] = useState(false)
+  const [checkSearch, setCheckSearch] = useState(false)
+  const [friends, setFriends] = useState([])
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -24,22 +31,33 @@ const ChatNav = () => {
     setAnchorEl(null)
   }
 
+  const SearchChangeHandleOpen = () => {
+    setCheckSearch(true)
+  }
+  const SearchChangeHandleClose = () => {
+    setCheckSearch(false)
+  }
+
+  const handleSearch = (e) => {
+    let userName = e.target.value
+    socket.emit('toServer-searchUser', { userName })
+  }
+
   const open = Boolean(anchorEl)
   const id = open ? 'simple-popover' : undefined
 
   const iconButtonProps = {
     'aria-label': 'delete',
+    onClick: checkSearch ? SearchChangeHandleClose : handleClick,
     sx: SearchTimeTransitionButton,
   }
-
-
   return (
     <>
       <Card sx={ChatListHeaderBox}>
         <Box sx={ChatListHeaderMenuButton}>
           {
             <IconButton {...iconButtonProps}>
-              {true ? <ArrowBackIcon /> : <MenuIcon />}
+              {checkSearch ? <ArrowBackIcon /> : <MenuIcon />}
             </IconButton>
           }
         </Box>
@@ -56,16 +74,23 @@ const ChatNav = () => {
           <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
         </Popover>
         <Box sx={ChatListHeaderSearchBox}>
-          <SearchIcon sx={{ position: 'absolute', left: 95, top: 53 }} />
-          <input
+
+          <OutlinedInput
             style={ChatListHeaderSearchTextField}
-            id="standard-basic"
-           
+
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">          <SearchIcon />
+            </InputAdornment>}
+            onChange={(e) => {
+              SearchChangeHandleOpen()
+              handleSearch(e)
+            }}
           />
+
         </Box>
       </Card>
-      <ChatList  />
-      {/* <SearchComponent /> */}
+      {checkSearch ? <SearchComponent /> : <ChatList props={friends} />}
+
     </>
   )
 }

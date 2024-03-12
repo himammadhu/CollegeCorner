@@ -7,7 +7,7 @@ import {
     OutlinedInput,
     Typography,
   } from '@mui/material'
-  import React, { useEffect, useState } from 'react'
+  import React, { useContext, useEffect, useState } from 'react'
   import {
     ChatComponentChatCard,
     ChatComponentInnerBoxBottom,
@@ -20,21 +20,31 @@ import {
 //   import Navbar from './Navbar'
   import SendIcon from '@mui/icons-material/Send'
 import UserNavBar from '../UserNavBar/UserNavBar'
+import { setChat,setSocket } from '../../../Context/UseContext'
+
   
-  const ChatComponent = ({ props }) => {
-  
+  const ChatComponent = () => {
+    const { checkChat } = useContext(setChat)
+    const { socket } = useContext(setSocket)
+
     const [message, setMessage] = useState('')
     const [chatData, setChatData] = useState([])
     console.log(chatData)
   
     const handleSend = () => {
-    
+      const Id = props._id
+      const Uid = Cookies.get('userId')
+  
+      socket.emit('toServer-sendMessage', { message, Id, Uid })
+  
+      setChatData((...preState) => preState.push({ message, check: false }))
     }
   
     useEffect(() => {
-     
+      if (!socket) return
   
-    }, [])
+      socket.on('toServer-sendMessage', ({ user }) => console.log(user))
+    }, [socket])
   
     return (
       <Card sx={ChatContainerMainContainer}>

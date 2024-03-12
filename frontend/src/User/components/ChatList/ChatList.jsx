@@ -1,4 +1,4 @@
-import { Avatar, Box, Typography } from '@mui/material'
+import { Avatar, Box, Card, Typography } from '@mui/material'
 import React from 'react'
 
 import {
@@ -10,7 +10,7 @@ import {
 const ChatList = () => {
 
     return (
-        <Box sx={ChatListBodyBox}>
+        <Card sx={ChatListBodyBox}>
 
             <Box sx={ChatListBodySingleCard} >
                 <Box sx={ChatListBodySingleCardInnerBox}>
@@ -52,7 +52,7 @@ const ChatList = () => {
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Card>
     )
 }
 

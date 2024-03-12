@@ -694,6 +694,8 @@ app.get("/ChatListFriends/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 })
+
+
 //delete
 app.delete("/ChatList/:Id", async (req, res) => {
 
@@ -1312,4 +1314,22 @@ app.post('/Login', async (req, res) => {
       })
     }
   } catch (error) { }
+})
+
+
+io.on('connection', (socket) => {
+  socket.on("toServer-searchUser", async({userName}) => {
+    try {
+      const regex = new RegExp(`^${userName}`, 'i'); // Case-insensitive regex
+      const usersData = await User.find({ name: { $regex: regex } });
+
+      if (userName.length === 0) {
+          socket.emit("fromServer-searchUser", { usersData: [] });
+      } else {
+          socket.emit("fromServer-searchUser", { usersData });
+      }
+  } catch (error) {
+      console.error("Error searching users:", error);
+  }
+  })
 })
