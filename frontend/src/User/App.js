@@ -14,27 +14,27 @@ import { useState } from "react";
 
 
 function App() {
-const [check, setCheck] = useState(false)
-const [userdata, setUserData] = useState(null)
+  const [check, setCheck] = useState(false)
+  const [userdata, setUserData] = useState(null)
 
 
-    return (
+  return (
 
-      <div className={`theme-${check ? "dark" : "light"}`}>
-        <Navbar  setCheck={setCheck} check={check} setUserData={setUserData}/>
-        <div style={{ display: "flex" }}>
-          <LeftBar />
-          <div style={{ flex: 6 }}>
-            <Routes>
-              <Route path="/" element={<Home userdata={userdata} />}/>
-              <Route path="/profile" element={ <Profile />}/>
-            </Routes>
-          </div>
-          <RightBar />
+    <div className={`theme-${check ? "dark" : "light"}`}>
+      <Navbar setCheck={setCheck} check={check} setUserData={setUserData} />
+      <div style={{ display: "flex" }}>
+        <LeftBar />
+        <div style={{ flex: 6 }}>
+          <Routes>
+            <Route path="/" element={<Home userdata={userdata} />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
         </div>
+        <RightBar />
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 
 

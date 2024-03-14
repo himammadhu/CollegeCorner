@@ -2,10 +2,9 @@ import "./leftBar.scss";
 import Friends from "../../assets/1.png";
 import Groups from "../../assets/2.png";
 import Memories from "../../assets/5.png";
-
-import Tutorials from "../../assets/11.png";
-import Fund from "../../assets/13.png";
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from 'react-router-dom'
 
 const LeftBar = () => {
@@ -25,7 +24,7 @@ const LeftBar = () => {
           <hr />
           <div className="item">
             <img src={Friends} alt="" />
-            <span>Friends</span>
+            <span>Followers</span>
           </div>
           <hr />
           <div className="item">
@@ -49,17 +48,24 @@ const LeftBar = () => {
         <div className="menu">
           <span>User</span>
           <div className="item">
-            <img src={Fund} alt="" />
+            <AccountCircleIcon/>
+            <Link to={'../Profile'}>
             <span>Account</span>
+            </Link>
           </div>
+          <br/>
           <div className="item">
-            <img src={Tutorials} alt="" />
+            <SettingsIcon/>
+            <Link to={'/user/Settings'}>
             <span>Settings</span>
+            </Link>
           </div>
+          <br/>
           <div className="item">
             <LogoutIcon />
             <span>Logout</span>
           </div>
+          <br/>
         </div>
       </div>
     </div>

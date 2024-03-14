@@ -32,8 +32,8 @@ import { setChat,setSocket } from '../../../Context/UseContext'
     console.log(chatData)
   
     const handleSend = () => {
-      const Id = props._id
-      const Uid = Cookies.get('userId')
+      const Id = checkChat._id
+      const Uid = sessionStorage.getItem('uId')
   
       socket.emit('toServer-sendMessage', { message, Id, Uid })
   

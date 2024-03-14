@@ -76,9 +76,15 @@ const Navbar = ({ setCheck, check, setUserData }) => {
           </div>
         </div>
         <div className="right">
+          <Link to={'/user/Profile'}>
           <PersonOutlinedIcon />
+          </Link>
+          <Link to={'/user/Chat'}>
           <EmailOutlinedIcon />
+          </Link>
+          <Link to={'/user/Notification'}>
           <NotificationsOutlinedIcon />
+          </Link>
           <div className="user">
             <img
               src={''}
