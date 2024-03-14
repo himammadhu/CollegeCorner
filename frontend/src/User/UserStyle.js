@@ -7,7 +7,11 @@ export const ChatListMainContainer = {
   height: '97vh',
   width: '25vw',
   m: 1,
+
+  
 }
+
+
 
 export const ChatListHeaderBox = {
   height: '10vh',
@@ -15,6 +19,14 @@ export const ChatListHeaderBox = {
   mb: 2,
   display: 'flex',
 }
+
+export const ChatListHeaderBoxResponsive = {
+  '@media (max-width: 768px)': {
+    display: 'none',
+  },
+};
+
+
 export const ChatListBodyBox = {
   height: '81vh',
   overflowY: 'scroll',
@@ -157,6 +169,11 @@ export const ChatComponentInnerBoxTop = {
   '&:hover::-webkit-scrollbar-thumb': {
     backgroundColor: '#cfbbbb', // Change the color on hover
   },
+  scrollbarWidth: 'none',
+  '-ms-overflow-style': 'none',
+  '&::-webkit-scrollbar': {
+     display: 'none',
+  },
 }
 
 export const ChatComponentInnerBoxBottom = {
@@ -178,7 +195,8 @@ export const ChatComponentChatCard = {
   maxWidth: '13vw', // Set a maximum width
   p: 2,
   backgroundColor: 'lightblue',
-  mx: 2,
+  m: 1,
+
   borderRadius: '20px',
   overflowWrap: 'break-word', // or use 'word-wrap: break-word' for older browsers
 

@@ -13,8 +13,8 @@ const SearchComponent = () => {
   useEffect(() => {
     if (!socket) return
 
-    socket.on('fromServer-searchUser', ({ usersData }) =>
-      setUserList(usersData)
+    socket.on('fromServer-searchUser', ({ ChatListlist }) =>
+      setUserList(ChatListlist)
     )
   }, [socket])
   return (

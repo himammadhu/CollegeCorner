@@ -1,4 +1,4 @@
-import { Box, Card, IconButton, InputAdornment, OutlinedInput, Popover, Typography } from '@mui/material'
+import { Box, Card, IconButton, InputAdornment, OutlinedInput, Popover, Typography, useMediaQuery } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
@@ -8,6 +8,8 @@ import {
   ChatListHeaderSearchBox,
   ChatListHeaderSearchTextField,
   SearchTimeTransitionButton,
+  ChatListHeaderBoxResponsive, // Import responsive style
+
 } from '../../UserStyle'
 import ChatList from '../ChatList/ChatList'
 // import SearchComponent from './SearchComponent'
@@ -18,6 +20,8 @@ import SearchComponent from '../SearchComponent/SearchComponent'
 
 const ChatNav = () => {
   const { socket } = useContext(setSocket)
+  const Id = sessionStorage.getItem('uId')
+  const matchesSmallScreen = useMediaQuery('(max-width: 768px)'); // Check if screen is small
 
   const [anchorEl, setAnchorEl] = useState(false)
   const [checkSearch, setCheckSearch] = useState(false)
@@ -40,7 +44,7 @@ const ChatNav = () => {
 
   const handleSearch = (e) => {
     let userName = e.target.value
-    socket.emit('toServer-searchUser', { userName })
+    socket.emit('toServer-searchUser', { userName,Id })
   }
 
   const open = Boolean(anchorEl)
@@ -53,7 +57,7 @@ const ChatNav = () => {
   }
   return (
     <>
-      <Card sx={ChatListHeaderBox}>
+      <Card sx={matchesSmallScreen ? ChatListHeaderBoxResponsive : ChatListHeaderBox}>
         <Box sx={ChatListHeaderMenuButton}>
           {
             <IconButton {...iconButtonProps}>
