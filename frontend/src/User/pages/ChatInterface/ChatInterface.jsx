@@ -1,25 +1,37 @@
 import React, { useState } from 'react'
 import ChatComponent from '../../components/ChatComponent/ChatComponent'
 import ChatList from '../../components/ChatList/ChatList'
-import { Box, Card } from '@mui/material'
+import { Box, Card, useMediaQuery } from '@mui/material'
 import ChatNav from '../../components/ChatNav/ChatNav'
 import { setChat } from '../../../Context/UseContext'
+import { Routes, Route } from 'react-router-dom'
+import { ChatListHeaderBoxResponsive, ChatListMainContainer } from '../../UserStyle'
 
 const ChatInterface = () => {
-  const [checkChat, setCheckChat] = useState(null)
+  const [checkChat, setCheckChat] = useState(false)
+  const matchesSmallScreen = useMediaQuery('(max-width: 768px)'); // Check if screen is small
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <setChat.Provider value={{checkChat,setCheckChat}}>
+      <setChat.Provider value={{ checkChat, setCheckChat }}>
+        {
+          !checkChat ? (<Box sx={matchesSmallScreen?ChatListHeaderBoxResponsive:ChatListMainContainer}>
+            <ChatNav />
 
-        <Box sx={{ width: '23vw' }}>
-          <ChatNav />
+          </Box>) : (
+            <Box sx={{ width: '98vw' }}>
+              <Routes>
+                <Route path='/ChatComponent/:CId' element={<ChatComponent />} />
+              </Routes>
 
-        </Box>
-        <Box sx={{ width: '77vw' }}>
-          {checkChat && <ChatComponent />}
 
-        </Box>
+            </Box>
+          )
+        }
+
+        {/* {!matchesSmallScreen  &&  */}
+
+
       </setChat.Provider>
 
     </Box>

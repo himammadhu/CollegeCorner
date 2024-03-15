@@ -8,8 +8,15 @@ export const ChatListMainContainer = {
   width: '25vw',
   m: 1,
 
-  
+
 }
+
+export const ChatListHeaderBoxResponsive = {
+  height: '97vh',
+  width: '100vw',
+  m: 1,
+};
+
 
 
 
@@ -20,11 +27,6 @@ export const ChatListHeaderBox = {
   display: 'flex',
 }
 
-export const ChatListHeaderBoxResponsive = {
-  '@media (max-width: 768px)': {
-    display: 'none',
-  },
-};
 
 
 export const ChatListBodyBox = {
@@ -95,6 +97,15 @@ export const ChatListHeaderSearchBox = {
   justifyContent: 'center',
 }
 
+export const ChatListHeaderSearchBoxResponsive = {
+  height: 31,
+  mt: 2.5,
+  mx: 3,
+  width: '75vw',
+  display: 'flex',
+  justifyContent: 'center',
+}
+
 export const ChatListHeaderMenuButton = {
   mt: 2.5,
 }
@@ -109,9 +120,25 @@ export const ChatListHeaderSearchTextField = {
   paddingLeft: '10px',
 }
 
+export const ChatListHeaderSearchTextFieldResponsive = {
+  width: '75vw',
+  display: 'flex',
+  justifyContent: 'center',
+  borderRadius: '20px',
+  border: '1px solid',
+  height: 35,
+  paddingLeft: '10px',
+}
+
 export const ChatContainerMainContainer = {
   height: '97vh',
-  width: '75vw',
+  width: '98vw',
+  m: 1,
+}
+
+export const ChatContainerMainContainerResponsive = {
+  height: '97vh',
+  width: '97vw',
   m: 1,
 }
 
@@ -138,6 +165,12 @@ export const ChatComponentInnerBoxChat = {
   display: 'flex',
   flexDirection: 'column-reverse',
   px: 25,
+  height: '80vh',
+}
+export const ChatComponentInnerBoxChatResponsive = {
+  display: 'flex',
+  flexDirection: 'column-reverse',
+  px: 10,
   height: '80vh',
 }
 
@@ -172,7 +205,7 @@ export const ChatComponentInnerBoxTop = {
   scrollbarWidth: 'none',
   '-ms-overflow-style': 'none',
   '&::-webkit-scrollbar': {
-     display: 'none',
+    display: 'none',
   },
 }
 

@@ -62,7 +62,7 @@ const Login = () => {
             "Connecting minds, forging friendships, and creating memories—welcome to College Corner, where every post is a step closer to a shared journey of learning, laughter, and lifelong connections.
           </p>
           <span>Don't you have an account?</span>
-          <Link to="/Guest/register">
+          <Link to="/register">
             <button>Register</button>
           </Link>
         </div>

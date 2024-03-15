@@ -5,18 +5,17 @@ import {
     ChatListBodyBox, ChatListBodySingleCard,
     ChatListBodySingleCardInnerBox,
     ChatListSingleCardInnerTypography,
-    ChatListHeaderBoxResponsive, // Import responsive style
 
 } from '../../UserStyle'
 import { setSocket, setChat } from '../../../Context/UseContext'
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 
 
 
 const ChatList = () => {
     const { setCheckChat } = useContext(setChat)
-    const matchesSmallScreen = useMediaQuery('(max-width: 768px)'); // Check if screen is small
 
     const [friends, setFriends] = useState([]);
     const { socket } = useContext(setSocket)
@@ -38,7 +37,7 @@ const ChatList = () => {
         })
     }
 
-    
+
 
 
     useEffect(() => {
@@ -46,17 +45,19 @@ const ChatList = () => {
     }, [])
 
     return (
-        <Card sx={matchesSmallScreen ? ChatListHeaderBoxResponsive : ChatListBodyBox}>
+        <Card sx={ChatListBodyBox}>
             {
                 friends.map((friend, key) => (
-                    <Box sx={ChatListBodySingleCard} key={key} onClick={() => setCheckChat(friend)}  >
-                        <Box sx={ChatListBodySingleCardInnerBox}>
-                            <Avatar />
-                            <Box sx={ChatListSingleCardInnerTypography}>
-                                <Typography>{friend.name}</Typography>
+                    <Link to={`/Chat/ChatComponent/${friend.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
+                        <Box sx={ChatListBodySingleCard}   >
+                            <Box sx={ChatListBodySingleCardInnerBox}>
+                                <Avatar />
+                                <Box sx={ChatListSingleCardInnerTypography}>
+                                    <Typography>{friend.name}</Typography>
+                                </Box>
                             </Box>
                         </Box>
-                    </Box>
+                    </Link>
 
                 ))
             }

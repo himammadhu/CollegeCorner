@@ -419,7 +419,6 @@ app.post("/SearchUser", async (req, res) => {
   try {
     const { userName, Id } = req.body;
     const objectId = new mongoose.Types.ObjectId(Id); // Convert Id to ObjectId
-    console.log(objectId);
     // Using a regular expression for a case-insensitive search
     const userData = await User.find({
       $and: [
@@ -493,6 +492,60 @@ app.put("/User/:id", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server error");
 
+  }
+});
+
+app.get("/singleFriendUser/:Clid/:Id", async (req, res) => {
+  try {
+    const { Clid, Id } = req.params;
+
+    const otherUser = await ChatList.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(Clid)
+        }
+      },
+      {
+        $project: {
+          otherUser: {
+            $cond: [
+              { $eq: ['$ChatListUserOne', new mongoose.Types.ObjectId(Id)] },
+              '$ChatListUserTwo',
+              '$ChatListUserOne'
+            ]
+          },
+          chatListId: '$_id' // Project the ChatList ID
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'userschemas',
+          localField: 'otherUser',
+          foreignField: '_id',
+          as: 'userData'
+        }
+      },
+      {
+        $unwind: '$userData' // Unwind the array
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$userData", { chatListId: "$chatListId" }] // Combine friend and chatListId into a single object
+          }
+        } // Promote the unwound document to the root level
+
+      }
+    ]);
+
+    if (otherUser.length === 0) {
+      return res.json({ message: 'Other user data not found' });
+    }
+    res.json(otherUser[0]);
+  } catch (error) {
+    console.error("Error retrieving other user data:", error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -1323,8 +1376,8 @@ app.post('/Login', async (req, res) => {
 
 io.on('connection', (socket) => {
 
-  socket.on("createRoomFromClient", ({ checkChat }) => {
-    const roomKey = checkChat.chatListId
+  socket.on("createRoomFromClient", ({ CId }) => {
+    const roomKey = CId
     socket.join(roomKey);
   })
 
@@ -1422,7 +1475,6 @@ io.on('connection', (socket) => {
         }
       ]);
 
-      console.log(ChatListlist);
 
       if (ChatListlist.length === 0) {
         socket.emit("fromServer-searchUser", { ChatListlist: [] });

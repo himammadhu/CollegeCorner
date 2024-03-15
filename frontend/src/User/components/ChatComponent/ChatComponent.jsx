@@ -6,36 +6,42 @@ import {
   InputAdornment,
   OutlinedInput,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
   ChatComponentChatCard,
   ChatComponentInnerBoxBottom,
   ChatComponentInnerBoxChat,
+  ChatComponentInnerBoxChatResponsive,
   ChatComponentInnerBoxTop,
   ChatComponentTopInnerBoxLeft,
   ChatComponentTopInnerBoxRight,
   ChatContainerMainContainer,
+  ChatContainerMainContainerResponsive,
 } from '../../UserStyle'
 //   import Navbar from './Navbar'
 import SendIcon from '@mui/icons-material/Send'
 import UserNavBar from '../UserNavBar/UserNavBar'
 import { setChat, setSocket } from '../../../Context/UseContext'
 import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
 
 const ChatComponent = () => {
-  const { checkChat } = useContext(setChat)
+  const matchesSmallScreen = useMediaQuery('(max-width: 968px)'); // Check if screen is small
+  const { CId } = useParams()
+
   const chatContainerRef = useRef(null);
 
   const { socket } = useContext(setSocket)
-  const Id = checkChat.chatListId
-  const ToId = checkChat._id
+
   const Uid = sessionStorage.getItem('uId')
   const [shouldScroll, setShouldScroll] = useState(false); // Add state to manage scrolling
 
 
   const [message, setMessage] = useState('')
+  const [UserDetails, setUserDetails] = useState(null)
   const [chatData, setChatData] = useState([])
 
 
@@ -53,6 +59,8 @@ const ChatComponent = () => {
   }, [shouldScroll]);
 
   const handleSend = () => {
+    const Id = UserDetails.chatListId
+    const ToId = UserDetails._id
     socket.emit('toServer-sendMessage', { message, Id, Uid, ToId }, (response) => {
       console.log(response);
       setMessage('')
@@ -64,11 +72,11 @@ const ChatComponent = () => {
 
   }
 
-  
+
   useEffect(() => {
     if (!socket) return
 
-    socket.emit("createRoomFromClient", { checkChat })
+    socket.emit("createRoomFromClient", { CId })
 
   }, [socket])
 
@@ -83,10 +91,18 @@ const ChatComponent = () => {
   }, [socket])
 
   const fetchChat = () => {
-    axios.get(`http://localhost:5000/Chat/${Id}`).then((response) => {
-      console.log(response.data);
+    axios.get(`http://localhost:5000/Chat/${CId}`).then((response) => {
       setChatData(response.data)
       setShouldScroll(true); // Trigger scrolling after updating chatData
+
+
+    })
+  }
+
+  const fetchUser = () => {
+    axios.get(`http://localhost:5000/singleFriendUser/${CId}/${Uid}`).then((response) => {
+      setUserDetails(response.data)
+
 
 
     })
@@ -95,43 +111,51 @@ const ChatComponent = () => {
 
   useEffect(() => {
     fetchChat()
-  }, [checkChat])
+    fetchUser()
+  }, [CId])
 
   return (
-    <Card sx={ChatContainerMainContainer} >
-      <UserNavBar />
-      <Box sx={ChatComponentInnerBoxChat}>
-        <FormControl fullWidth sx={{ m: 1 }}>
-          <OutlinedInput
-            sx={ChatComponentInnerBoxBottom}
-            id="outlined-adornment-amount"
-            onChange={(event) => setMessage(event.target.value)}
-            value={message}
-            endAdornment={
-              <InputAdornment position="start">
-                <IconButton aria-label="delete" onClick={handleSend}>
-                  <SendIcon />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <Box sx={ChatComponentInnerBoxTop} ref={chatContainerRef}>
+    <>
+      {UserDetails &&
+        (<Card sx={matchesSmallScreen ? ChatContainerMainContainerResponsive : ChatContainerMainContainer} >
+          <UserNavBar UserDetails={UserDetails} />
+          <Box sx={matchesSmallScreen ? ChatComponentInnerBoxChatResponsive : ChatComponentInnerBoxChat}>
+            <FormControl fullWidth sx={{ m: 1 }}>
+              <OutlinedInput
+                sx={ChatComponentInnerBoxBottom}
+                id="outlined-adornment-amount"
+                onChange={(event) => setMessage(event.target.value)}
+                value={message}
+                endAdornment={
+                  <InputAdornment position="start">
+                    <IconButton aria-label="delete" onClick={handleSend}>
+                      <SendIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <Box sx={ChatComponentInnerBoxTop} ref={chatContainerRef}>
 
 
-          {
-            chatData.map((chat, key) => (
-              <Box sx={chat.ChatFromId === Uid ? ChatComponentTopInnerBoxRight : ChatComponentTopInnerBoxLeft}>
-                <Card sx={ChatComponentChatCard}>{chat.ChatContent}</Card>
-              </Box>
-            ))
-          }
+              {
+                chatData.map((chat, key) => (
+                  <Box sx={chat.ChatFromId === Uid ? ChatComponentTopInnerBoxRight : ChatComponentTopInnerBoxLeft} key={key}>
+                    <Card sx={ChatComponentChatCard}>{chat.ChatContent}</Card>
+                  </Box>
+                ))
+              }
 
 
 
-        </Box>
-      </Box>
-    </Card>
+            </Box>
+          </Box>
+        </Card>)
+
+      }
+
+    </>
+
   )
 }
 

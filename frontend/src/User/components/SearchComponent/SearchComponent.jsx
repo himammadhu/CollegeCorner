@@ -1,7 +1,8 @@
 import { Avatar, Box, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { ChatListBodyBox, ChatListBodySingleCard, ChatListBodySingleCardInnerBox, ChatListSingleCardInnerTypography } from '../../UserStyle'
-import { setSocket,setChat } from '../../../Context/UseContext'
+import { setSocket, setChat } from '../../../Context/UseContext'
+import { Link } from 'react-router-dom'
 
 
 const SearchComponent = () => {
@@ -20,14 +21,16 @@ const SearchComponent = () => {
   return (
     <Box sx={ChatListBodyBox}>
       {userList.map((list, key) => (
-        <Box sx={ChatListBodySingleCard} onClick={() => setCheckChat(list)}  key={key} >
-          <Box sx={ChatListBodySingleCardInnerBox}>
-            <Avatar />
-            <Box sx={ChatListSingleCardInnerTypography}>
-              <Typography>{list.name}</Typography>
+        <Link to={`/Chat/ChatComponent/${list.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
+          <Box sx={ChatListBodySingleCard}   >
+            <Box sx={ChatListBodySingleCardInnerBox}>
+              <Avatar />
+              <Box sx={ChatListSingleCardInnerTypography}>
+                <Typography>{list.name}</Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
+        </Link>
       ))}
     </Box>
   )

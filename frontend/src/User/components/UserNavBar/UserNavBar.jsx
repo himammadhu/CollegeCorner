@@ -1,13 +1,16 @@
-import { Avatar, Box, Card, IconButton, Popover, Typography } from '@mui/material'
+import { Avatar, Box, Card, IconButton, Popover, Typography, useMediaQuery } from '@mui/material'
 import React, { useContext, useState } from 'react'
-import { NavbarInnerFirstBox, NavbarMainContainerBox, NavbarTypography } from '../../UserStyle'
+import { NavbarInnerFirstBox, NavbarMainContainerBox, NavbarTypography, SearchTimeTransitionButton } from '../../UserStyle'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { setChat } from '../../../Context/UseContext'
+import { Link } from 'react-router-dom';
 
-const UserNavBar = () => {
+const UserNavBar = ({ UserDetails }) => {
+    const matchesSmallScreen = useMediaQuery('(max-width: 968px)'); // Check if screen is small
+    const { setCheckChat, checkChat } = useContext(setChat)
 
-    const { checkChat } = useContext(setChat)
-    console.log(checkChat);
+
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -21,11 +24,27 @@ const UserNavBar = () => {
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
+
+    const iconButtonProps = {
+        'aria-label': 'delete',
+        // onClick: checkSearch ? SearchChangeHandleClose : handleClick,
+        sx: SearchTimeTransitionButton,
+    }
     return (
         <Card sx={NavbarMainContainerBox}>
             <Box sx={NavbarInnerFirstBox}>
+                {
+                    checkChat &&
+                    <Link to={`/Chat`} onClick={() => setCheckChat(false)} style={{ textDecoration: 'none' }} >
+
+                        <IconButton {...iconButtonProps}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                    </Link>
+                }
+
                 <Avatar />
-                <Typography sx={NavbarTypography}>{checkChat.name}</Typography>
+                <Typography sx={NavbarTypography}>{UserDetails.name}</Typography>
             </Box>
             <Box>
                 <IconButton aria-label="delete" onClick={handleClick}>

@@ -6,9 +6,10 @@ import {
   ChatListHeaderBox,
   ChatListHeaderMenuButton,
   ChatListHeaderSearchBox,
+  ChatListHeaderSearchBoxResponsive,
   ChatListHeaderSearchTextField,
+  ChatListHeaderSearchTextFieldResponsive,
   SearchTimeTransitionButton,
-  ChatListHeaderBoxResponsive, // Import responsive style
 
 } from '../../UserStyle'
 import ChatList from '../ChatList/ChatList'
@@ -44,7 +45,7 @@ const ChatNav = () => {
 
   const handleSearch = (e) => {
     let userName = e.target.value
-    socket.emit('toServer-searchUser', { userName,Id })
+    socket.emit('toServer-searchUser', { userName, Id })
   }
 
   const open = Boolean(anchorEl)
@@ -57,7 +58,7 @@ const ChatNav = () => {
   }
   return (
     <>
-      <Card sx={matchesSmallScreen ? ChatListHeaderBoxResponsive : ChatListHeaderBox}>
+      <Card sx={ChatListHeaderBox}>
         <Box sx={ChatListHeaderMenuButton}>
           {
             <IconButton {...iconButtonProps}>
@@ -77,10 +78,10 @@ const ChatNav = () => {
         >
           <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
         </Popover>
-        <Box sx={ChatListHeaderSearchBox}>
+        <Box sx={matchesSmallScreen ? ChatListHeaderSearchBoxResponsive : ChatListHeaderSearchBox}>
 
           <OutlinedInput
-            style={ChatListHeaderSearchTextField}
+            style={matchesSmallScreen ? ChatListHeaderSearchTextFieldResponsive : ChatListHeaderSearchTextField}
 
             id="outlined-adornment-amount"
             startAdornment={<InputAdornment position="start">          <SearchIcon />
