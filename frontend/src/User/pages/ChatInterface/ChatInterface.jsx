@@ -6,16 +6,20 @@ import ChatNav from '../../components/ChatNav/ChatNav'
 import { setChat } from '../../../Context/UseContext'
 import { Routes, Route } from 'react-router-dom'
 import { ChatListHeaderBoxResponsive, ChatListMainContainer } from '../../UserStyle'
+import { useLocation } from 'react-router-dom';
 
 const ChatInterface = () => {
   const [checkChat, setCheckChat] = useState(false)
+  const { pathname } = useLocation(); // Use the useLocation hook and destructure pathname
+
   const matchesSmallScreen = useMediaQuery('(max-width: 768px)'); // Check if screen is small
+  const isChatComponentPage = pathname.startsWith('/Chat/ChatComponent/');
 
   return (
     <Box sx={{ display: 'flex' }}>
       <setChat.Provider value={{ checkChat, setCheckChat }}>
         {
-          !checkChat ? (<Box sx={matchesSmallScreen?ChatListHeaderBoxResponsive:ChatListMainContainer}>
+          !isChatComponentPage ? (<Box sx={matchesSmallScreen?ChatListHeaderBoxResponsive:ChatListMainContainer}>
             <ChatNav />
 
           </Box>) : (

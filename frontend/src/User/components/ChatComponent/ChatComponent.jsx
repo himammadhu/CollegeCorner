@@ -43,6 +43,9 @@ const ChatComponent = () => {
   const [message, setMessage] = useState('')
   const [UserDetails, setUserDetails] = useState(null)
   const [chatData, setChatData] = useState([])
+  const [typingTimeOut, setTypingTimeOut] = useState(null)
+
+
 
 
   const scrollToBottom = () => {
@@ -58,18 +61,33 @@ const ChatComponent = () => {
     }
   }, [shouldScroll]);
 
-  const handleSend = () => {
+  const handleSend = (e) => {
+    e.preventDefault()
     const Id = UserDetails.chatListId
     const ToId = UserDetails._id
+
     socket.emit('toServer-sendMessage', { message, Id, Uid, ToId }, (response) => {
       console.log(response);
       setMessage('')
       setChatData(prevState => [...prevState, response]);
       setShouldScroll(true); // Trigger scrolling after updating chatData
+      socket.emit("myFriendsFromClient")
+
 
 
     })
 
+  }
+
+  const handleInput = (e) => {
+    setMessage(e.target.value)
+    socket.emit('typing-started', { CId })
+
+    if (typingTimeOut) clearTimeout(typingTimeOut)
+
+    setTypingTimeOut(setTimeout(() => {
+      socket.emit('typing-stopped', { CId })
+    }, 500))
   }
 
 
@@ -80,12 +98,16 @@ const ChatComponent = () => {
 
   }, [socket])
 
+
+
+
   useEffect(() => {
     if (!socket) return
 
 
     socket.on('toServer-sendMessage', (response) => {
       setChatData(prevState => [...prevState, response]);
+
 
     })
   }, [socket])
@@ -119,16 +141,17 @@ const ChatComponent = () => {
       {UserDetails &&
         (<Card sx={matchesSmallScreen ? ChatContainerMainContainerResponsive : ChatContainerMainContainer} >
           <UserNavBar UserDetails={UserDetails} />
-          <Box sx={matchesSmallScreen ? ChatComponentInnerBoxChatResponsive : ChatComponentInnerBoxChat}>
+          <Box sx={matchesSmallScreen ? ChatComponentInnerBoxChatResponsive : ChatComponentInnerBoxChat} component={'form'} onSubmit={handleSend}>
             <FormControl fullWidth sx={{ m: 1 }}>
               <OutlinedInput
                 sx={ChatComponentInnerBoxBottom}
                 id="outlined-adornment-amount"
-                onChange={(event) => setMessage(event.target.value)}
+                autoComplete='off'
+                onChange={(event) => handleInput(event)}
                 value={message}
                 endAdornment={
                   <InputAdornment position="start">
-                    <IconButton aria-label="delete" onClick={handleSend}>
+                    <IconButton aria-label="delete" type='submit'>
                       <SendIcon />
                     </IconButton>
                   </InputAdornment>

@@ -24,8 +24,9 @@ const ChatList = () => {
     useEffect(() => {
         if (!socket) return
 
-        socket.on('myFriendsFromSever', ({ usersData }) =>
-            setFriends(usersData)
+        socket.on('myFriendsFromSever', () => {
+            fetchFollowers()
+        }
         )
     }, [socket])
 
@@ -53,7 +54,11 @@ const ChatList = () => {
                             <Box sx={ChatListBodySingleCardInnerBox}>
                                 <Avatar />
                                 <Box sx={ChatListSingleCardInnerTypography}>
-                                    <Typography>{friend.name}</Typography>
+                                    <Typography>{friend.name}
+                                        <Typography variant="caption" display="block" gutterBottom>
+                                            {friend.latestChat && friend.latestChat.ChatContent}
+                                        </Typography>
+                                    </Typography>
                                 </Box>
                             </Box>
                         </Box>

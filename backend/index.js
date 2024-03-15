@@ -414,19 +414,27 @@ app.get("/User", async (req, res) => {
   }
 })
 
-
 app.post("/SearchUser", async (req, res) => {
   try {
     const { userName, Id } = req.body;
     const objectId = new mongoose.Types.ObjectId(Id); // Convert Id to ObjectId
+
+    // Assuming you have access to the college ID of the authenticated user
+    const user = await User.findById(objectId).populate('CollegeId'); // Assuming college field is populated in the user document
+    if (!user || !user.CollegeId) {
+      return res.status(404).json({ error: "User or user's college not found" });
+    }
+
+    const collegeId = user.CollegeId._id; // Assuming college ID is stored in the college field
+
     // Using a regular expression for a case-insensitive search
     const userData = await User.find({
       $and: [
         { _id: { $ne: objectId } }, // Exclude the currently authenticated user
+        { CollegeId: collegeId }, // Filter users by the same college
         { name: { $regex: userName, $options: 'i' } }
       ]
     });
-    // console.log(userData);
     if (userData && userData.length > 0) {
       // Check if there is a room with matching fromId or toId for the current user
       const chatList = await ChatList.find({
@@ -457,6 +465,7 @@ app.post("/SearchUser", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 //delete
 app.delete("/User/:Id", async (req, res) => {
@@ -676,7 +685,7 @@ app.get("/ChatList/:id", async (req, res) => {
     const Id = req.params.id
     let ChatListlist = await ChatList.find({ ChatListUserTwo: Id, __v: 0 }).populate('ChatListUserOne');
 
-
+    console.log(ChatListlist);
     res.json({ ChatListlist });
 
   }
@@ -724,29 +733,55 @@ app.get("/ChatListFriends/:id", async (req, res) => {
               else: { $arrayElemAt: ['$UserOneData', 0] }
             }
           },
-          chatListId: '$_id' // Project the ChatList ID
+          chatListId: '$_id', // Project the ChatList ID
+          __v: 1 // Include the __v field
         }
       },
       {
         $unwind: "$friend" // Unwind the friend field
       },
       {
+        $match: {
+          $and: [
+            { __v: 1 }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: "chatschemas", // Assuming your Chat model is named "Chat"
+          localField: "_id",
+          foreignField: "ChatListId",
+          as: "chats"
+        }
+      },
+      // Unwind the chats array
+      { $unwind: "$chats" },
+      // Sort chats by ChatDateTime field in descending order
+      { $sort: { "chats.ChatDateTime": -1 } },
+      {
         $group: {
           _id: "$friend._id", // Group by friend ID
           friend: { $first: "$friend" }, // Use $first accumulator for all fields from the User collection
-          chatListId: { $first: "$chatListId" } // Preserve the ChatList ID
+          chatListId: { $first: "$chatListId" }, // Preserve the ChatList ID
+          latestChat: { $first: "$chats" } // Get the latest chat
+
         }
       },
       {
         $replaceRoot: {
           newRoot: {
-            $mergeObjects: ["$friend", { chatListId: "$chatListId" }] // Combine friend and chatListId into a single object
+            $mergeObjects: [
+              "$friend",
+              { chatListId: "$chatListId" }, // Include chatListId
+              { latestChat: "$latestChat" } // Include latest chat
+            ]
           }
         }
       }
     ]);
 
-    // console.log(ChatListlist);
+    console.log(ChatListlist);
     res.json({ ChatListlist });
   } catch (err) {
     console.error(err.message);
@@ -1381,6 +1416,14 @@ io.on('connection', (socket) => {
     socket.join(roomKey);
   })
 
+  socket.on("typing-started", ({ CId }) => {
+    socket.broadcast.to(CId).emit("typing-started-from-server")
+  })
+
+  socket.on("typing-stopped", ({ CId }) => {
+    socket.broadcast.to(CId).emit("typing-stopped-from-server")
+  })
+
   socket.on("toServer-sendMessage", async ({ message, Id, Uid, ToId }, callback) => {
     try {
       const ChatSchemaData = new Chat({
@@ -1392,7 +1435,7 @@ io.on('connection', (socket) => {
       });
       const chatDoc = await ChatSchemaData.save();
       callback(chatDoc);
-      socket.to(Id).emit("toServer-sendMessage", chatDoc);
+      socket.broadcast.to(Id).emit("toServer-sendMessage", chatDoc);
 
 
     }
@@ -1446,7 +1489,8 @@ io.on('connection', (socket) => {
                 else: { $arrayElemAt: ['$UserOneData', 0] }
               }
             },
-            chatListId: '$_id' // Project the ChatList ID
+            chatListId: '$_id', // Project the ChatList ID
+            __v: 1 // Include the __v field
           }
         },
         {
@@ -1454,8 +1498,9 @@ io.on('connection', (socket) => {
         },
         {
           $match: {
-            $or: [
-              { "friend.name": { $regex: `^${userName}`, $options: 'i' } } // Case-insensitive regex for user name
+            $and: [
+              { __v: 1 }, // Check if __v is equal to 2
+              { $or: [{ "friend.name": { $regex: `^${userName}`, $options: 'i' } }] } // Case-insensitive regex for user name
             ]
           }
         },
@@ -1486,64 +1531,8 @@ io.on('connection', (socket) => {
     }
   })
 
-  socket.on("myFriendsFromClient", async (id) => {
-    const ObjUser = new mongoose.Types.ObjectId(id);
+  socket.on("myFriendsFromClient", async () => {
 
-    let ChatListlist = await ChatList.aggregate([
-      {
-        $match: {
-          $or: [
-            { ChatListUserOne: ObjUser },
-            { ChatListUserTwo: ObjUser }
-          ]
-        }
-      },
-      {
-        $lookup: {
-          from: 'userschemas',
-          localField: 'ChatListUserOne',
-          foreignField: '_id',
-          as: 'UserOneData'
-        }
-      },
-      {
-        $lookup: {
-          from: 'userschemas',
-          localField: 'ChatListUserTwo',
-          foreignField: '_id',
-          as: 'UserTwoData'
-        }
-      },
-      {
-        $project: {
-          friend: {
-            $cond: {
-              if: { $eq: ['$ChatListUserOne', ObjUser] },
-              then: { $arrayElemAt: ['$UserTwoData', 0] },
-              else: { $arrayElemAt: ['$UserOneData', 0] }
-            }
-          },
-          chatListId: '$_id' // Project the ChatList ID
-        }
-      },
-      {
-        $unwind: "$friend" // Unwind the friend field
-      },
-      {
-        $group: {
-          _id: "$friend._id", // Group by friend ID
-          friend: { $first: "$friend" }, // Use $first accumulator for all fields from the User collection
-          chatListId: { $first: "$chatListId" } // Preserve the ChatList ID
-        }
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: ["$friend", { chatListId: "$chatListId" }] // Combine friend and chatListId into a single object
-          }
-        }
-      }
-    ]);
-    socket.emit("myFriendsFromSever", { ChatListlist })
+    socket.broadcast.emit("myFriendsFromSever")
   })
 })
