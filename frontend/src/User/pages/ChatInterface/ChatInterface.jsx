@@ -13,7 +13,7 @@ const ChatInterface = () => {
   const { pathname } = useLocation(); // Use the useLocation hook and destructure pathname
 
   const matchesSmallScreen = useMediaQuery('(max-width: 768px)'); // Check if screen is small
-  const isChatComponentPage = pathname.startsWith('/Chat/ChatComponent/');
+  const isChatComponentPage = pathname.startsWith('/user/Chat/ChatComponent');
 
   return (
     <Box sx={{ display: 'flex' }}>

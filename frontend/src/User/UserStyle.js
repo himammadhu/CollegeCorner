@@ -4,7 +4,7 @@ export const UserMainAppContainer = {
 }
 
 export const ChatListMainContainer = {
-  height: '97vh',
+  height: '80vh',
   width: '25vw',
   m: 1,
 
@@ -12,7 +12,7 @@ export const ChatListMainContainer = {
 }
 
 export const ChatListHeaderBoxResponsive = {
-  height: '97vh',
+  height: '80vh',
   width: '100vw',
   m: 1,
 };
@@ -30,7 +30,7 @@ export const ChatListHeaderBox = {
 
 
 export const ChatListBodyBox = {
-  height: '81vh',
+  height: '70vh',
   overflowY: 'scroll',
   WebkitOverflowScrolling: 'touch', // For smoother scrolling on iOS devices
 
@@ -131,13 +131,13 @@ export const ChatListHeaderSearchTextFieldResponsive = {
 }
 
 export const ChatContainerMainContainer = {
-  height: '97vh',
+  height: '87vh',
   width: '98vw',
   m: 1,
 }
 
 export const ChatContainerMainContainerResponsive = {
-  height: '97vh',
+  height: '87vh',
   width: '97vw',
   m: 1,
 }
@@ -165,13 +165,13 @@ export const ChatComponentInnerBoxChat = {
   display: 'flex',
   flexDirection: 'column-reverse',
   px: 25,
-  height: '80vh',
+  height: '70vh',
 }
 export const ChatComponentInnerBoxChatResponsive = {
   display: 'flex',
   flexDirection: 'column-reverse',
   px: 10,
-  height: '80vh',
+  height: '70vh',
 }
 
 export const ChatComponentInnerBoxTop = {
@@ -230,7 +230,7 @@ export const ChatComponentChatCard = {
   backgroundColor: 'lightblue',
   m: 1,
 
-  borderRadius: '20px',
+  borderRadius: '15px',
   overflowWrap: 'break-word', // or use 'word-wrap: break-word' for older browsers
 
 }

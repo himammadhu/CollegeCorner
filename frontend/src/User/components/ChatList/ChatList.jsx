@@ -49,7 +49,7 @@ const ChatList = () => {
         <Card sx={ChatListBodyBox}>
             {
                 friends.map((friend, key) => (
-                    <Link to={`/Chat/ChatComponent/${friend.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
+                    <Link to={`/user/Chat/ChatComponent/${friend.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
                         <Box sx={ChatListBodySingleCard}   >
                             <Box sx={ChatListBodySingleCardInnerBox}>
                                 <Avatar />

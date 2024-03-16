@@ -37,6 +37,16 @@ const RightBar = () => {
     })
   }
 
+  const handleRemoveRequest = (Id) => {
+
+    axios.put(`http://localhost:5000/ChatListReject/${Id}`).then((response) => {
+      console.log(response.data.message);
+      fetchFollowRequest()
+      fetchFollowers()
+
+    })
+  }
+
   useEffect(() => {
     fetchFollowRequest()
     fetchFollowers()
@@ -66,8 +76,8 @@ const RightBar = () => {
                   <span>{userData.ChatListUserOne.name}</span>
                 </div>
                 <div className="buttons">
-                  <Button variant="contained" onClick={() => handleAddRequest(userData._id)} >follow</Button>
-                  <Button variant="contained" >dismiss</Button>
+                  <Button variant="contained" sx={{ fontSize: '10px', px: 3 }} onClick={() => handleAddRequest(userData._id)} >follow</Button>
+                  <Button variant="contained" sx={{ fontSize: '10px' }} onClick={() => handleRemoveRequest(userData._id)}>dismiss</Button>
                 </div>
               </div>
             ))

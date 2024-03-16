@@ -1,3 +1,6 @@
+const { dirname } = require('path');
+const { fileURLToPath }  = require('url')
+
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -9,9 +12,10 @@ const moment = require('moment')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 const { ObjectId } = require('mongoose').Types;
-
+const fs = require('fs')
 
 const mongoose = require('mongoose');
+const path = require('path');
 
 app.use(cors())
 app.use(bodyParser.json());
@@ -829,6 +833,26 @@ app.put("/ChatListAccept/:Id", async (req, res) => {
   }
 })
 
+app.put("/ChatListReject/:Id", async (req, res) => {
+
+  try {
+    const Id = req.params.Id
+    const ChatListlist = await ChatList.findByIdAndUpdate(
+      Id,
+      { __v: 2 },
+      { new: true }
+    );
+
+
+    res.json({ ChatListlist });
+
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+})
+
 
 const ChatSchemaStructure = new mongoose.Schema({
   ChatFromId: {
@@ -842,6 +866,9 @@ const ChatSchemaStructure = new mongoose.Schema({
     required: true
   },
   ChatContent: {
+    type: String,
+  },
+  ChatFile: {
     type: String,
   },
   ChatDateTime: {
@@ -1534,5 +1561,36 @@ io.on('connection', (socket) => {
   socket.on("myFriendsFromClient", async () => {
 
     socket.broadcast.emit("myFriendsFromSever")
+  })
+
+
+  socket.on("uploadFile", ({ data, CId, Uid, ToId, fileName },callback) => {
+
+    const filePath = path.join(__dirname, 'upload', fileName); // Use path.join for file path
+
+
+
+
+    fs.writeFile(filePath, data, { encoding: 'base64' }, async () => {
+
+
+        const ChatSchemaData = new Chat({
+          ChatFromId: Uid,
+          ChatToId: ToId,
+          ChatListId: CId,
+          ChatFile:data.toString('base64'),
+          ChatDateTime: moment().format(),
+        });
+        const chatDoc = await ChatSchemaData.save();
+        callback(chatDoc);
+        socket.broadcast.to(CId).emit("showuploadFile", chatDoc);
+
+      
+
+        
+
+    });
+
+
   })
 })

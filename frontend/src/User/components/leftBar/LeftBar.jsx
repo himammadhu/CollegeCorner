@@ -11,17 +11,11 @@ const LeftBar = () => {
 
 
   return (
-    <div className="leftBar">
+    <div className="leftBarUser">
       <div className="container">
         <div className="menu">
-          <div className="user">
-            <img
-              src={''}
-              alt=""
-            />
-            <span>{''}</span>
-          </div>
-          <hr />
+
+
           <div className="item">
             <img src={Friends} alt="" />
             <span>Followers</span>
@@ -29,7 +23,7 @@ const LeftBar = () => {
           <hr />
           <div className="item">
             <img src={Groups} alt="" />
-            <Link to={'../../Chat'}>
+            <Link to={'/user/Chat/'}>
 
               <span>Chats</span>
             </Link>
@@ -48,24 +42,24 @@ const LeftBar = () => {
         <div className="menu">
           <span>User</span>
           <div className="item">
-            <AccountCircleIcon/>
+            <AccountCircleIcon />
             <Link to={'../Profile'}>
-            <span>Account</span>
+              <span>Account</span>
             </Link>
           </div>
-          <br/>
+          <br />
           <div className="item">
-            <SettingsIcon/>
+            <SettingsIcon />
             <Link to={'/user/Settings'}>
-            <span>Settings</span>
+              <span>Settings</span>
             </Link>
           </div>
-          <br/>
+          <br />
           <div className="item">
             <LogoutIcon />
             <span>Logout</span>
           </div>
-          <br/>
+          <br />
         </div>
       </div>
     </div>

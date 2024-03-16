@@ -1,6 +1,7 @@
 import {
   Box,
   Card,
+  CardMedia,
   FormControl,
   IconButton,
   InputAdornment,
@@ -26,6 +27,22 @@ import UserNavBar from '../UserNavBar/UserNavBar'
 import { setChat, setSocket } from '../../../Context/UseContext'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import styled from '@emotion/styled'
+
+
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 
 const ChatComponent = () => {
@@ -43,6 +60,7 @@ const ChatComponent = () => {
   const [message, setMessage] = useState('')
   const [UserDetails, setUserDetails] = useState(null)
   const [chatData, setChatData] = useState([])
+  const [AttachFile, setAttachFile] = useState(null)
   const [typingTimeOut, setTypingTimeOut] = useState(null)
 
 
@@ -104,11 +122,18 @@ const ChatComponent = () => {
   useEffect(() => {
     if (!socket) return
 
-
     socket.on('toServer-sendMessage', (response) => {
       setChatData(prevState => [...prevState, response]);
+    })
+  }, [socket])
 
 
+
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on('showuploadFile', (response) => {
+      setChatData(prevState => [...prevState, response]);
     })
   }, [socket])
 
@@ -116,18 +141,34 @@ const ChatComponent = () => {
     axios.get(`http://localhost:5000/Chat/${CId}`).then((response) => {
       setChatData(response.data)
       setShouldScroll(true); // Trigger scrolling after updating chatData
-
-
     })
   }
 
   const fetchUser = () => {
     axios.get(`http://localhost:5000/singleFriendUser/${CId}/${Uid}`).then((response) => {
       setUserDetails(response.data)
-
-
-
     })
+  }
+
+  const handleFile = (event) => {
+    const file = event.target.files[0]
+    setAttachFile(file)
+    const ToId = UserDetails._id
+
+
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const timestamp = new Date().getTime();
+    const fileName = `${randomString}_${timestamp}_${file.name}`;
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      const data = reader.result
+      socket.emit('uploadFile', { data, CId, Uid, ToId, fileName }, (response) => {
+        setChatData(prevState => [...prevState, response]);
+
+      })
+    }
+    console.log(file);
   }
 
 
@@ -151,6 +192,10 @@ const ChatComponent = () => {
                 value={message}
                 endAdornment={
                   <InputAdornment position="start">
+                    <IconButton component={'label'}>
+                      <AttachFileIcon />
+                      <VisuallyHiddenInput type="file" onChange={handleFile} />
+                    </IconButton>
                     <IconButton aria-label="delete" type='submit'>
                       <SendIcon />
                     </IconButton>
@@ -164,7 +209,14 @@ const ChatComponent = () => {
               {
                 chatData.map((chat, key) => (
                   <Box sx={chat.ChatFromId === Uid ? ChatComponentTopInnerBoxRight : ChatComponentTopInnerBoxLeft} key={key}>
-                    <Card sx={ChatComponentChatCard}>{chat.ChatContent}</Card>
+                    {
+                      chat.ChatContent ? <Card sx={ChatComponentChatCard}>{chat.ChatContent}</Card> :
+                        <Card sx={ChatComponentChatCard}>
+                          <CardMedia image={chat.ChatFile} sx={{width:200,height:200}} />
+                        </Card>
+
+
+                    }
                   </Box>
                 ))
               }

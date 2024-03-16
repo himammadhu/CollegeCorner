@@ -13,7 +13,7 @@ const UserNavBar = ({ UserDetails }) => {
     const [typing, setTyping] = useState(false)
     const { socket } = useContext(setSocket)
     const { pathname } = useLocation(); // Use the useLocation hook and destructure pathname
-    const isChatComponentPage = pathname.startsWith('/Chat/ChatComponent/');
+    const isChatComponentPage = pathname.startsWith('/user/Chat/ChatComponent/');
 
 
 
@@ -49,8 +49,7 @@ const UserNavBar = ({ UserDetails }) => {
             <Box sx={NavbarInnerFirstBox}>
                 {
                     isChatComponentPage &&
-                    <Link to={`/Chat`} onClick={() => setCheckChat(false)} style={{ textDecoration: 'none' }} >
-
+                    <Link to={`/user/Chat`} onClick={() => setCheckChat(false)} style={{ textDecoration: 'none' }} >
                         <IconButton {...iconButtonProps}>
                             <ArrowBackIcon />
                         </IconButton>

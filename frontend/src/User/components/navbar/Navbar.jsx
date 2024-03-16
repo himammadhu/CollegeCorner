@@ -1,6 +1,5 @@
 import "./navbar.scss";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -9,9 +8,17 @@ import { Link } from "react-router-dom";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import axios from 'axios'
-import { FormControl, IconButton, InputAdornment,  OutlinedInput } from "@mui/material";
+import { FormControl, IconButton, InputAdornment, OutlinedInput } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import { useLocation } from 'react-router-dom';
+
 const Navbar = ({ setCheck, check, setUserData }) => {
+
+  const { pathname } = useLocation(); // Use the useLocation hook and destructure pathname
+
+  const isChatComponentPage = pathname === '/user/Chat/ChatComponent/';
+  const isChatComponentUrl = pathname === '/user/Chat/';
+  console.log(isChatComponentPage);
 
 
   const Id = sessionStorage.getItem('uId')
@@ -43,21 +50,26 @@ const Navbar = ({ setCheck, check, setUserData }) => {
           <Link to="/" style={{ textDecoration: "none" }}>
             <span>CoLLegECorNEr</span>
           </Link>
-          <HomeOutlinedIcon />
-          {
-            check ? <LightModeIcon onClick={() => { setCheck(!check) }} /> : <DarkModeIcon onClick={() => { setCheck(!check) }} />
+          <Link to={'/user/'} style={{ textDecoration: "none" }}>
+            <HomeOutlinedIcon />
+          </Link>
+          {!isChatComponentPage && !isChatComponentUrl && <>
+            {
+              check ? <LightModeIcon onClick={() => { setCheck(!check) }} /> : <DarkModeIcon onClick={() => { setCheck(!check) }} />
+            }
+          </>
           }
-
           <GridViewOutlinedIcon />
-          <div >
+          {!isChatComponentPage && !isChatComponentUrl && (<div >
 
             <FormControl sx={{ m: 1, width: '100ch' }} variant="outlined">
               <OutlinedInput
-              className="search"
+                className="search"
                 sx={{ borderRadius: 20 }}
                 id="outlined-adornment-password"
                 type={'text'}
                 onChange={handleSearch}
+                autoComplete="off"
                 placeholder="Search..."
                 size="small"
                 startAdornment={<InputAdornment position="start">
@@ -73,17 +85,17 @@ const Navbar = ({ setCheck, check, setUserData }) => {
 
               />
             </FormControl>
-          </div>
+          </div>)}
         </div>
         <div className="right">
           <Link to={'/user/Profile'}>
-          <PersonOutlinedIcon />
+            <PersonOutlinedIcon className="iconColor" />
           </Link>
           <Link to={'/user/Chat'}>
-          <EmailOutlinedIcon />
+            <EmailOutlinedIcon className="iconColor" />
           </Link>
           <Link to={'/user/Notification'}>
-          <NotificationsOutlinedIcon />
+            <NotificationsOutlinedIcon className="iconColor" />
           </Link>
           <div className="user">
             <img
