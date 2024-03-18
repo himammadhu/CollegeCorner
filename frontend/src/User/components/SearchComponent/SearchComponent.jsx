@@ -21,7 +21,7 @@ const SearchComponent = () => {
   return (
     <Box sx={ChatListBodyBox}>
       {userList.map((list, key) => (
-        <Link to={`/Chat/ChatComponent/${list.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
+        <Link to={`/user/Chat/ChatComponent/${list.chatListId}`} onClick={() => setCheckChat(true)} key={key} style={{ textDecoration: 'none' }} >
           <Box sx={ChatListBodySingleCard}   >
             <Box sx={ChatListBodySingleCardInnerBox}>
               <Avatar />
