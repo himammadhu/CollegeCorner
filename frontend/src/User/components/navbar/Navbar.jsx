@@ -16,7 +16,8 @@ const Navbar = ({ setCheck, check, setUserData }) => {
 
   const { pathname } = useLocation(); // Use the useLocation hook and destructure pathname
 
-  const isChatComponentPage = pathname === '/user/Chat/ChatComponent/';
+  const isChatComponentPage = pathname.startsWith('/user/Chat/ChatComponent/');
+  console.log(isChatComponentPage);
   const isChatComponentUrl = pathname === '/user/Chat/';
   console.log(isChatComponentPage);
 

@@ -12,6 +12,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
   ChatComponentChatCard,
+  ChatComponentChatCardResponsive,
   ChatComponentInnerBoxBottom,
   ChatComponentInnerBoxChat,
   ChatComponentInnerBoxChatResponsive,
@@ -211,7 +212,7 @@ const ChatComponent = () => {
                   <Box sx={chat.ChatFromId === Uid ? ChatComponentTopInnerBoxRight : ChatComponentTopInnerBoxLeft} key={key}>
                     {
                       chat.ChatContent ? <Card sx={ChatComponentChatCard}>{chat.ChatContent}</Card> :
-                        <Card sx={ChatComponentChatCard}>
+                        <Card sx={matchesSmallScreen?ChatComponentChatCardResponsive:ChatComponentChatCard}>
                           <CardMedia image={chat.ChatFile} sx={{width:200,height:200}} />
                         </Card>
 

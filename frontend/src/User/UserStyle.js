@@ -225,7 +225,19 @@ export const ChatComponentTopInnerBoxRight = {
 
 export const ChatComponentChatCard = {
 
-  maxWidth: '13vw', // Set a maximum width
+  maxWidth: '15vw', // Set a maximum width
+  p: 2,
+  backgroundColor: 'lightblue',
+  m: 1,
+
+  borderRadius: '15px',
+  overflowWrap: 'break-word', // or use 'word-wrap: break-word' for older browsers
+
+}
+
+export const ChatComponentChatCardResponsive = {
+
+  maxWidth: '30vw', // Set a maximum width
   p: 2,
   backgroundColor: 'lightblue',
   m: 1,
